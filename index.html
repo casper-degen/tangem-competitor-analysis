@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tangem competitor analysis</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap">
+<style>
+/* Layout: one scrolling page. Top findings, features, revenue, hypotheses, sources; hypothesis sheets open in one side panel.
+   Colour roles: blue = Tangem or the point of a chart; green / amber / grey = first wave / next wave / deferred. */
+:root{
+  color-scheme:dark;
+  --bg:#060607; --panel:#121215; --panel-2:#1b1b20; --line:#2a2a30; --line-2:#3d3d45;
+  --fg:#f5f5f6; --fg-2:#b9b9c2; --fg-3:#858590;
+  --accent:#6aa5ff; --accent-fill:#3987e5; --accent-soft:rgba(57,135,229,.16);
+  --mute-fill:#6e6e7a; --track:#24242a;
+  --good:#12a312; --warn:#e0a015; --serious:#ec835a; --crit:#e05656; --violet:#9085e9;
+  --display:"Inter Tight","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --text:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-lg:22px; --r-md:14px; --r-sm:9px;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    color-scheme:light;
+    --bg:#f1f1f2; --panel:#ffffff; --panel-2:#f3f3f5; --line:#dedee3; --line-2:#c4c4cc;
+    --fg:#0a0a0b; --fg-2:#45454d; --fg-3:#70707a;
+    --accent:#1c63cf; --accent-fill:#2a78d6; --accent-soft:rgba(42,120,214,.12);
+    --mute-fill:#9a9aa6; --track:#e8e8ec;
+    --good:#0a8a0a; --warn:#b97a00; --serious:#c9602f; --crit:#c93636; --violet:#6250d6;
+  }
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f1f1f2; --panel:#ffffff; --panel-2:#f3f3f5; --line:#dedee3; --line-2:#c4c4cc;
+  --fg:#0a0a0b; --fg-2:#45454d; --fg-3:#70707a;
+  --accent:#1c63cf; --accent-fill:#2a78d6; --accent-soft:rgba(42,120,214,.12);
+  --mute-fill:#9a9aa6; --track:#e8e8ec;
+  --good:#0a8a0a; --warn:#b97a00; --serious:#c9602f; --crit:#c93636; --violet:#6250d6;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+body{background:var(--bg);color:var(--fg);font-family:var(--text);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:var(--accent);text-underline-offset:3px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5.2vw,62px);line-height:1.04;letter-spacing:-.035em}
+h2{font-size:clamp(26px,3.4vw,40px);line-height:1.1;letter-spacing:-.028em}
+h3{font-size:17px;line-height:1.3}
+p{margin:0}
+.lead{font-size:17px;color:var(--fg-2);max-width:66ch}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--fg-3);font-weight:600}
+.small{font-size:13px;color:var(--fg-3)}
+.num{font-variant-numeric:tabular-nums}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:14px;padding-block:9px}
+.brand{font-family:var(--display);font-weight:600;font-size:15px;white-space:nowrap}
+.brand span{color:var(--fg-3);font-weight:500}
+.nav-links{display:flex;gap:2px;overflow-x:auto;min-width:0;scrollbar-width:none;margin-left:auto}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{white-space:nowrap;color:var(--fg-2);text-decoration:none;font-size:13px;font-weight:500;padding:7px 11px;border-radius:999px}
+.nav-links a:hover{background:var(--panel-2);color:var(--fg)}
+.nav-links a[aria-current="true"]{background:var(--fg);color:var(--bg)}
+
+/* bands */
+section{padding-block:68px;border-top:1px solid var(--line);scroll-margin-top:52px}
+section.hero{border-top:0;padding-block:48px 44px}
+.head{display:grid;gap:12px;margin-bottom:30px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:900px){.g2,.g3{grid-template-columns:minmax(0,1fr)} section{padding-block:52px}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;min-width:0}
+.panel h3{margin-bottom:6px}
+.panel ul{margin:8px 0 0;padding-left:18px;color:var(--fg-2)}
+.panel li+li{margin-top:6px}
+.cap{font-size:13px;color:var(--fg-3);margin-bottom:16px}
+.foot{font-size:12.5px;color:var(--fg-3);margin-top:14px}
+
+/* pills, chips, buttons */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--panel-2);white-space:nowrap}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--fg-3);flex:none}
+.pill.t1 i,.pill.live i{background:var(--good)} .pill.t2 i,.pill.limited i{background:var(--warn)} .pill.t3 i,.pill.unconfirmed i{background:var(--mute-fill)} .pill.announced i{background:var(--accent-fill)}
+.chipbtn{border:1px solid var(--line);background:var(--panel);color:var(--fg-2);font-size:12.5px;font-weight:500;padding:6px 11px;border-radius:999px;cursor:pointer}
+.chipbtn:hover,.chipbtn[aria-pressed="true"]{border-color:var(--line-2);color:var(--fg);background:var(--panel-2)}
+.ref{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 6px;border-radius:999px;border:0;font:600 11px var(--display);cursor:pointer;color:#fff;vertical-align:1px}
+.ref.t1,.tok.t1{background:var(--good)} .ref.t2,.tok.t2{background:var(--warn);color:#111} .ref.t3,.tok.t3{background:var(--mute-fill)}
+
+/* hero */
+.hero h1{margin:14px 0 22px;max-width:26ch;font-size:clamp(30px,4vw,48px);line-height:1.08}
+.find{display:grid;gap:10px;margin:0 0 18px;max-width:900px}
+.find>div{display:grid;grid-template-columns:104px minmax(0,1fr);gap:14px;align-items:baseline}
+.find dt a{font-size:12px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;text-decoration:none}
+.find dd{margin:0;font-size:17px;color:var(--fg-2)}
+@media (max-width:620px){.find>div{grid-template-columns:minmax(0,1fr);gap:2px}}
+
+/* responsive tables: rows become cards on phones */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-3);font-weight:600;background:var(--panel-2)}
+tr:last-child td{border-bottom:0}
+td.k{font-weight:600}
+td.m{color:var(--fg-2)}
+@media (max-width:760px){
+  table.rt thead{display:none}
+  table.rt tr{display:block;padding:12px 14px;border-bottom:1px solid var(--line)}
+  table.rt tr:last-child{border-bottom:0}
+  table.rt td{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;border:0;padding:3px 0}
+  table.rt td::before{content:attr(data-l);color:var(--fg-3);font-size:12px}
+  table.rt td.k{display:block;font-size:15px;margin-bottom:4px}
+  table.rt td.k::before{content:none}
+}
+
+
+/* charts */
+.bars{display:grid;gap:9px;position:relative}
+.bar-row{display:grid;grid-template-columns:150px minmax(0,1fr) 70px;gap:12px;align-items:center;font-size:13.5px}
+.bar-row .bl{color:var(--fg-2);min-width:0}
+.bar-row .bl small{display:block;color:var(--fg-3);font-size:11.5px}
+.bar-track{height:20px;position:relative;border-left:1px solid var(--line-2)}
+.bar-fill{height:100%;border-radius:0 4px 4px 0;background:var(--mute-fill);min-width:2px}
+.bar-fill.hi{background:var(--accent-fill)} .bar-fill.neg{background:var(--crit)} .bar-fill.pos{background:var(--good)}
+.bar-avg{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--fg);box-shadow:0 0 0 2px var(--panel)}
+.bar-row .bv{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.vline{position:absolute;top:0;bottom:0;width:0;border-left:1.5px dashed var(--accent);pointer-events:none}
+.vline span{position:absolute;bottom:100%;left:4px;font-size:11px;color:var(--accent);white-space:nowrap}
+@media (max-width:620px){.bar-row{grid-template-columns:104px minmax(0,1fr) 58px;gap:8px}}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12.5px;color:var(--fg-2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:12px;height:12px;border-radius:3px;background:var(--mute-fill);flex:none}
+.sw.hi{background:var(--accent-fill)} .sw.dot{border-radius:50%}
+/* slope */
+.slope{position:relative;height:250px;margin:8px 0 4px}
+.slope svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.slope .pt{position:absolute;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 2px var(--panel)}
+.slope .lb{position:absolute;font-size:12.5px;white-space:nowrap;transform:translateY(-50%);font-variant-numeric:tabular-nums}
+.slope .lb.l{text-align:right;transform:translate(-100%,-50%)}
+.slope .ax{position:absolute;bottom:-4px;font-size:11.5px;color:var(--fg-3);transform:translateX(-50%)}
+/* hypothesis number */
+.tok{width:30px;height:30px;border-radius:50%;font:600 12px var(--display);color:#fff;flex:none;display:inline-flex;align-items:center;justify-content:center}
+
+/* competitors */
+.gap-g{display:grid;gap:3px;align-content:start}
+.gap-g .lbl{margin-bottom:5px;padding-left:8px}
+.gap-row{display:grid;grid-template-columns:236px minmax(0,1fr) 70px;gap:10px;align-items:center;font-size:13.5px;padding:5px 8px;border-radius:10px}
+.gap-row.miss{background:var(--accent-soft)}
+.gap-bar{display:flex;gap:2px;height:20px}
+.gap-bar i{border-radius:3px;background:var(--mute-fill)}
+.gap-bar i.e{background:color-mix(in srgb,var(--mute-fill) 45%,var(--panel))} .gap-bar i.o{background:var(--track)}
+.gap-row .n{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:680px){.gap-row{grid-template-columns:minmax(0,1fr) 70px} .gap-row .gap-bar{grid-column:1/-1;grid-row:2}}
+.sw.e{background:color-mix(in srgb,var(--mute-fill) 45%,var(--panel))} .sw.o{background:var(--track)}
+.hint{cursor:help;text-decoration:underline dotted var(--fg-3);text-underline-offset:3px}
+.mx th,.mx td{padding:6px 4px;text-align:center;border-right:1px solid var(--line)}
+.mx th:first-child,.mx td:first-child{text-align:left;padding-left:14px;min-width:170px;position:sticky;left:0;background:var(--panel);z-index:1;font-weight:600}
+.mx th:first-child{background:var(--panel-2)}
+.mx th{font-size:11px;letter-spacing:.02em;text-transform:none;white-space:nowrap}
+.mx tbody th{font-size:13.5px;letter-spacing:0;color:var(--fg)}
+.mx th.me,.mx td.me{background:var(--accent-soft)}
+.mx th.sep,.mx td.sep{border-left:2px solid var(--line-2)}
+.cell{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:0;background:transparent;color:var(--fg-3)}
+.cell.in{background:var(--accent-fill);color:#fff}
+.cell.lim{background:color-mix(in srgb,var(--accent-fill) 40%,var(--panel));color:var(--fg)}
+.cell.ext{border:1.5px solid var(--accent-fill);color:var(--accent)}
+.cell.plan{border:1.5px dashed var(--fg-3);color:var(--fg-2)}
+.cell.closed{border:1.5px solid var(--crit);color:var(--crit)}
+
+details.acc{border:1px solid var(--line);border-radius:var(--r-md);background:var(--panel);min-width:0}
+details.acc+details.acc{margin-top:8px}
+details.acc>summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;font-weight:600}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary .sub{font-weight:400;color:var(--fg-3);font-size:13px;margin-left:auto;text-align:right}
+details.acc>summary::after{content:"+";font-size:18px;color:var(--fg-3);flex:none;width:16px;text-align:center}
+details.acc[open]>summary::after{content:"–"}
+.acc-body{padding:2px 18px 18px;display:grid;gap:12px;font-size:13.5px;color:var(--fg-2)}
+.acc-body b{color:var(--fg)}
+
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(600px,100%);background:var(--panel);border-left:1px solid var(--line);z-index:21;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.dr-top{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dr-top .sp{flex:1}
+.ibtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel-2);cursor:pointer;font-size:16px;line-height:1}
+.dr-body{overflow-y:auto;padding:20px 22px 28px;display:grid;gap:16px;align-content:start}
+.dr-body h2{font-size:26px}
+.dr-tags{display:flex;flex-wrap:wrap;gap:6px}
+.kf{display:grid;gap:8px}
+.kf>div{padding:13px 15px;border-radius:var(--r-md);background:var(--panel-2)}
+.kf b{display:block;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--fg-3);margin-bottom:4px}
+.kf p,.kf .els,.steps{font-size:14.5px;color:var(--fg)}
+.kf ul+b,.kf p+b{margin-top:14px}
+.steps{margin:0;padding-left:20px}
+.steps li+li{margin-top:8px}
+
+.tip{position:fixed;z-index:30;pointer-events:none;max-width:280px;background:var(--fg);color:var(--bg);font-size:12.5px;line-height:1.4;padding:8px 11px;border-radius:10px;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
+.src{columns:2;column-gap:32px;font-size:12.5px;color:var(--fg-2)}
+.src p{break-inside:avoid;margin-bottom:8px;overflow-wrap:anywhere}
+.src b{color:var(--fg)}
+@media (max-width:720px){.src{columns:1}}
+@media (max-width:680px){.mx th:first-child,.mx td:first-child{min-width:124px;max-width:124px;white-space:normal;padding-left:10px}.mx tbody th:first-child{font-size:12.5px}}
+.bar-row .bv{white-space:nowrap}
+@media (max-width:620px){.slope .lb{font-size:11.5px}}
+#ch-perps{margin-top:24px}
+:root{--on-mute:#fff}
+:root[data-theme="light"]{--on-mute:#111}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--on-mute:#111}}
+.ref.t3,.tok.t3{color:var(--on-mute)}
+span.ref{cursor:default}
+
+.legend .cell{cursor:default}
+.ref.t1,.tok.t1{background:#0c850c}
+
+/* ---- charts added in the English edition ---- */
+/* flow: boxes joined by arrows; turns vertical on phones */
+.flow{display:flex;align-items:stretch;min-width:0}
+.fnode{flex:1 1 0;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);font-size:13px;color:var(--fg-2);line-height:1.35}
+.fnode em{display:block;font-style:normal;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--fg-3);font-weight:600;margin-bottom:3px}
+.fnode b{display:block;color:var(--fg);font-weight:600}
+.fnode.hi{border-color:var(--accent-fill);background:var(--accent-soft)}
+.fnode.me{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--panel-2))}
+.farr{flex:none;min-width:26px;max-width:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 6px;font-size:11px;line-height:1.25;color:var(--fg-3);text-align:center}
+.farr svg{width:18px;height:10px;flex:none;stroke:var(--fg-3);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:620px){
+  .flow{flex-direction:column}
+  .farr{flex-direction:row;max-width:none;padding:5px 0;gap:8px;justify-content:flex-start;margin-left:14px;text-align:left}
+  .farr svg{transform:rotate(90deg)}
+}
+.drawer .flow{flex-direction:column}
+.drawer .farr{flex-direction:row;max-width:none;padding:4px 0;gap:8px;justify-content:flex-start;margin-left:14px;text-align:left}
+.drawer .farr svg{transform:rotate(90deg)}
+@media (min-width:560px){
+  .drawer .flow{flex-direction:row}
+  .drawer .farr{flex-direction:column;justify-content:center;padding:0 4px;margin-left:0;min-width:22px}
+  .drawer .farr svg{transform:none}
+}
+/* small charts inside the sheet */
+.mini{padding:14px 15px;border-radius:var(--r-md);border:1px solid var(--line)}
+.mini h4{margin:0 0 10px;font:600 13.5px/1.3 var(--display);color:var(--fg)}
+.mini .bar-row{grid-template-columns:128px minmax(0,1fr) 78px;font-size:13px;margin-top:7px}
+.mini .bar-track{height:16px}
+.bar-fill.pale{background:color-mix(in srgb,var(--accent-fill) 38%,var(--panel))}
+.bar-seg{position:absolute;top:0;bottom:0;border-radius:0 4px 4px 0}
+.dots{display:flex;gap:5px;align-items:center;height:16px}
+.dots i{width:14px;height:14px;border-radius:50%;background:var(--mute-fill)}
+.dots i.hi{background:var(--accent-fill)}
+.mini .bar-track:has(.dots){border-left:0}
+@media (max-width:480px){.mini .bar-row{grid-template-columns:104px minmax(0,1fr) 72px;gap:8px}}
+/* ---- version 4: one scrolling page ---- */
+@media (max-width:620px){.brand{display:none} .nav-links{margin-left:0}}
+/* hypothesis cards: one grid per wave, and every card lines its fields up on the rows of that grid */
+.lbl{margin:0 0 7px;font:600 11.5px var(--text);letter-spacing:.07em;text-transform:uppercase;color:var(--fg-3)}
+.sub-h{display:flex;align-items:center;gap:10px;margin:36px 0 12px}
+.head+.sub-h{margin-top:0}
+.sub-h .pill{font-size:13.5px;padding:5px 13px 5px 10px}
+.hcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.hcard{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--warn);border-radius:var(--r-md);padding:16px 18px 18px;min-width:0;display:grid;grid-template-rows:subgrid;grid-row:span 6;row-gap:14px}
+.hcard.full{grid-row:span 7}
+.hcard.t1{border-top-color:var(--good)}
+.hc-id{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12.5px;color:var(--fg-3)}
+.hcard h3{font-size:16.5px;line-height:1.25}
+.hc-idea{color:var(--fg-2);font-size:13.5px}
+.hc-b{min-width:0}
+.hc-b p{font-size:13.5px;color:var(--fg-2)}
+.els{margin:0;padding:0;list-style:none;display:grid;gap:7px;font-size:13.5px;color:var(--fg)}
+.els li{position:relative;padding-left:17px}
+.els li::before{content:"";position:absolute;left:0;top:.5em;width:7px;height:7px;border-radius:2px;background:var(--accent-fill)}
+.hcard .chipbtn{justify-self:start;align-self:end;color:var(--fg)}
+#hy-def th:first-child,#hy-def td:first-child{width:230px}
+@media (max-width:760px){#hy-def th:first-child,#hy-def td:first-child{width:auto}}
+.note p{font-size:14px;color:var(--fg-2);max-width:86ch}
+#sources{padding-bottom:84px}
+/* on phones Tangem's column stays in view next to the feature names while the matrix scrolls */
+@media (max-width:680px){
+  .mx th.me,.mx td.me{position:sticky;left:124px;z-index:1;background:linear-gradient(var(--accent-soft),var(--accent-soft)),var(--panel);box-shadow:1px 0 0 var(--line-2)}
+}
+
+/* take-rate rows (linear) */
+.tk{display:grid;gap:10px;margin-top:6px}
+.tk-row{display:grid;grid-template-columns:170px minmax(0,1fr) 230px;gap:14px;align-items:center;font-size:13.5px}
+.tk-row .bl{color:var(--fg);font-weight:600}
+.tk-row .bl small{display:block;color:var(--fg-3);font-size:11.5px;font-weight:400}
+.tk-track{position:relative;height:22px;border-radius:6px;background:var(--panel-2)}
+.tk-rng{position:absolute;top:5px;bottom:5px;border-radius:4px;background:var(--mute-fill)}
+.tk-me{position:absolute;top:-3px;bottom:-3px;width:4px;margin-left:-2px;border-radius:2px;background:var(--accent-fill);box-shadow:0 0 0 2px var(--panel)}
+.tk-v b{display:block;font:600 15px var(--display);font-variant-numeric:tabular-nums}
+.tk-v small{display:block;font-size:12px;color:var(--fg-3)}
+.tk-v small.me{color:var(--accent)}
+.tk-row.ax{margin-top:-4px}
+.tk-ax{position:relative;height:16px;font-size:11px;color:var(--fg-3)}
+.tk-ax span{position:absolute;transform:translateX(-50%)}
+.tk-ax span:first-child{transform:none} .tk-ax span:last-child{transform:translateX(-100%)}
+@media (max-width:760px){.tk-row{grid-template-columns:minmax(0,1fr);gap:4px} .tk-row.ax{display:none} .tk-v{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}}
+/* revenue table */
+.rv-ctl{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin-bottom:12px}
+.rv-ctl .grp{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--fg-3)}
+.rv{font-size:13px;font-variant-numeric:tabular-nums}
+.rv th,.rv td{padding:0;border-right:1px solid var(--line);text-align:right;vertical-align:middle;white-space:nowrap}
+.rv thead th{text-transform:none;letter-spacing:0;font-size:12px}
+.rv th:first-child{position:sticky;left:0;z-index:2;text-align:left;padding:8px 12px;min-width:138px;background:var(--panel);color:var(--fg);font-size:13.5px;font-weight:600;text-transform:none;letter-spacing:0;box-shadow:1px 0 0 var(--line-2)}
+.rv thead th:first-child{padding:0;background:var(--panel-2)}
+.rv tbody th small,.rv tfoot th small{display:block;font-weight:400;font-size:11.5px;color:var(--fg-3)}
+.rv .rvh{all:unset;box-sizing:border-box;display:flex;gap:4px;justify-content:flex-end;align-items:center;width:100%;min-height:40px;padding:8px 7px;font-size:11.5px;cursor:pointer;color:var(--fg-2);font-weight:600;white-space:normal;text-align:right;line-height:1.2}
+.rv th:first-child .rvh{justify-content:flex-start;padding-left:12px}
+.rv .rvh:hover,.rv th[aria-sort$="ending"] .rvh{color:var(--fg)}
+.rv .rvh:focus-visible,.rv .rvc:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.rv .ar{color:var(--accent);min-width:9px}
+.rv .rvc{all:unset;box-sizing:border-box;position:relative;display:flex;justify-content:flex-end;align-items:center;gap:5px;width:100%;min-width:74px;min-height:38px;padding:6px 7px;cursor:default}
+.rv .rvb{position:absolute;left:0;top:5px;bottom:5px;background:var(--accent-soft);border-radius:0 3px 3px 0;pointer-events:none}
+.rv .rvc span{position:relative;font-weight:600;color:var(--fg)}
+.rv sup{color:var(--fg-3);font-weight:400;margin-left:1px}
+.rv .rvc em,.rv-leg em{position:relative;font:600 9.5px/1 var(--display);font-style:normal;width:15px;height:15px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--line-2);color:var(--fg-3);flex:none}
+.rv em.b-c,.rv-leg em.b-c{border-color:var(--good);color:var(--good)}
+.rv em.b-f,.rv-leg em.b-f{border-color:var(--accent);color:var(--accent)}
+.rv em.b-e,.rv-leg em.b-e{border-style:dashed}
+.rv td.nd .rvc{color:var(--fg-3);font-size:12px;justify-content:flex-end}
+.rv td.no{background:repeating-linear-gradient(135deg,transparent 0 6px,color-mix(in srgb,var(--line) 55%,transparent) 6px 7px)}
+.rv td.no.tot{background:none;color:var(--fg-3);font-size:12px;padding-right:8px}
+.rv td.tot,.rv th.tot{border-right:2px solid var(--line-2)}
+.rv tr.me th:first-child{background:linear-gradient(var(--accent-soft),var(--accent-soft)),var(--panel);color:var(--accent)}
+.rv tr.me td{background-color:var(--accent-soft)}
+.rv tfoot th,.rv tfoot td{border-top:2px solid var(--line-2);background:var(--panel-2)}
+.rv tfoot th:first-child{background:var(--panel-2)}
+.rv tfoot td{padding:9px 8px;font-weight:600}
+.rv tfoot tr.cnt th,.rv tfoot tr.cnt td{border-top:1px solid var(--line);font-weight:400;color:var(--fg-3);font-size:12px}
+.rv-leg{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px;font-size:12.5px;color:var(--fg-2)}
+.rv-leg span{display:inline-flex;align-items:center;gap:6px}
+.rv-leg .sw-no{width:22px;height:14px;border:1px solid var(--line);border-radius:3px;background:repeating-linear-gradient(135deg,transparent 0 5px,var(--line) 5px 6px)}
+@media (max-width:680px){.rv th:first-child{min-width:116px;max-width:116px;white-space:normal;padding:8px 8px}.rv .rvc{min-width:76px}}
+/* 23 columns: wallet names run vertically so the matrix fits a desktop screen */
+@media (min-width:981px){.mx thead th:not(:first-child){writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;text-align:left;vertical-align:middle;padding:10px 2px;font-size:11.5px;height:112px}.mx td{padding:5px 2px}.mx th:first-child,.mx td:first-child{min-width:150px}}
+</style>
+
+
+</head>
+<body>
+<nav class="nav" aria-label="Sections">
+  <div class="wrap">
+    <div class="brand">Tangem <span>· competitor analysis</span></div>
+    <div class="nav-links" id="nav">
+      <a href="#features">Features</a>
+      <a href="#revenue">Revenue</a>
+      <a href="#hypotheses">Hypotheses</a>
+      <a href="#sources">Sources</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">Competitor analysis and growth hypotheses for Tangem · as of 13 November 2026</div>
+    <h1>What 22 crypto wallets have built, what it earns them, and what Tangem could add</h1>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Part 1 · Features</div>
+      <h2 id="co-h2"></h2>
+      <p class="lead">Rows are features, columns are wallets, Tangem first. Perps are perpetual futures, leveraged trades with no expiry.</p>
+    </div>
+    <div class="scroll"><table class="mx" id="mx" aria-label="Features by wallet"></table></div>
+    <div class="legend"><span><b class="cell in">●</b>built in</span><span><b class="cell lim">◐</b><span class="hint" tabindex="0" data-tip="Limited means a beta or rollout, one asset or one platform, a product closed to new customers, or a feature that lives in the company's exchange but opens inside the wallet app. Country limits do not count.">limited</span></span><span><b class="cell ext">↗</b>via a third-party wallet</span><span><b class="cell plan">◷</b>announced</span><span><b class="cell closed">×</b>shut down</span><span><b class="cell">–</b>none</span><span><b class="cell">?</b>unconfirmed</span></div>
+    <div class="panel" style="margin-top:26px">
+      <h3 id="gap-h"></h3>
+      <div class="cap">Each bar counts the 22 competitors. A green or amber number opens that hypothesis, and a gray number is deferred.</div>
+      <div class="grid g2" id="ch-gap"></div>
+      <div class="legend"><span><i class="sw"></i>built in</span><span><i class="sw e"></i>limited, third-party, announced or shut down</span><span><i class="sw o"></i>none or unconfirmed</span></div>
+    </div>
+    <p class="lead" id="gap-bridge" style="margin-top:22px"></p>
+  </div>
+</section>
+
+<section id="revenue">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Part 2 · Revenue</div>
+      <h2>What each feature earns, wallet by wallet</h2>
+      <p class="lead">The table shows every revenue figure we could find for 23 wallets, by feature. It sorts by any column, and each cell shows its source and period on hover. Tangem is the blue row.</p>
+    </div>
+    <div class="rv-ctl">
+      <span class="grp">Period <button type="button" class="chipbtn" data-per="1" aria-pressed="true">Last 12 months</button><button type="button" class="chipbtn" data-per="0" aria-pressed="false">Latest month</button></span>
+      <span class="grp">Wallets <button type="button" class="chipbtn" data-rt="all" aria-pressed="true">All</button><button type="button" class="chipbtn" data-rt="hw" aria-pressed="false">Hardware</button><button type="button" class="chipbtn" data-rt="sw" aria-pressed="false">Software</button></span>
+    </div>
+    <div class="scroll"><table class="rv" id="rv" aria-label="Revenue by wallet and feature"></table></div>
+    <div class="rv-leg"><span><em class="b-c">C</em>measured on-chain</span><span><em class="b-f">F</em>company filing</span><span><em>S</em>company statement</span><span><em>P</em>press report</span><span><em class="b-e">E</em>our estimate</span><span>n/d: has the feature, no public figure</span><span><i class="sw-no"></i>doesn't have the feature</span><span>≥ a floor</span><span>* a different period</span></div>
+  </div>
+</section>
+
+<section id="hypotheses">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Part 3 · Hypotheses</div>
+      <h2 id="hy-h2"></h2>
+    </div>
+    <h3 class="sub-h"><span class="pill t1"><i></i><span id="n-t1">First wave</span></span></h3>
+    <div class="hcards" id="hy-first"></div>
+    <h3 class="sub-h"><span class="pill t2"><i></i><span id="n-t2">Next wave</span></span></h3>
+    <div class="hcards" id="hy-next"></div>
+    <h3 class="sub-h"><span class="pill t3"><i></i><span id="n-t3">Deferred</span></span></h3>
+    <div class="scroll"><table class="rt" id="hy-def"><thead><tr><th>Hypothesis</th><th>Why not now</th><th>Revisit when</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</section>
+
+<section id="sources">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Public sources</div>
+      <h2>Sources</h2>
+      <p class="lead">Public sources as of 13 November 2026. On-chain data was read between 10 and 13 November. Figures marked est. are our estimates. Tangem figures are outside readings of public data and are floors. ether.fi Cash, Casa, Nunchuk and Bitkey appear as benchmarks and are not among the 22. This is not investment or legal advice.</p>
+    </div>
+    <details class="acc">
+      <summary><span>All links</span><span class="sub" id="src-n"></span></summary>
+      <div class="acc-body"><div class="src" id="src"></div></div>
+    </details>
+  </div>
+</section>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="dr-title">
+  <div class="dr-top"><span class="small" id="dr-kind"></span><span class="sp"></span><button type="button" class="ibtn" id="dr-prev" aria-label="Previous">‹</button><button type="button" class="ibtn" id="dr-next" aria-label="Next">›</button><button type="button" class="ibtn" id="dr-close" aria-label="Close">×</button></div>
+  <div class="dr-body" id="dr-body"></div>
+</aside>
+<div class="tip" id="tip" hidden></div>
+
+
+<script>
+const ROWS=['Swap and bridge','Buying and selling for fiat','Staking','Stablecoin yield','BTC yield','Perps (perpetual futures)','Prediction markets','Tokenized stocks and gold (RWA)','Payment card, account, payments','Crypto-backed loans','Paid protection, recovery','Multisig and inheritance','Insurance','B2B and co-brand'];
+/* who does the work behind each feature, in ROWS order: the hover note on the feature name */
+const ROWTIP=[
+ 'Routers such as 1inch, LI.FI, SwapKit, Changelly and ChangeNOW. SafePal and OKX Wallet run their own.',
+ 'MoonPay at 11 of 22, then Simplex, Banxa, Mercuryo, Ramp and Transak.',
+ 'Kiln, Everstake, Figment, Lido and P2P.org run the staking.',
+ 'Aave and Morpho vaults. MetaMask and Phantom pay on their own stablecoins.',
+ 'Lombard LBTC, Babylon and cbBTC on Aave.',
+ 'Hyperliquid at most wallets. Aster and Lighter at a few.',
+ 'Polymarket at five wallets, Kalshi at Phantom.',
+ 'Ondo and xStocks tokens at most wallets. Robinhood Stock Tokens at two.',
+ 'Licensed issuers such as Baanx, Monavate and Fiat24, and Bridge with Stripe.',
+ 'Morpho, Aave and Kamino do the lending.',
+ 'Ledger Recover at $99.99 a year, MetaMask Transaction Shield at $9.99 a month, CoolWallet warranty at $39.',
+ 'Ledger Multisig and SecuX have it built in. Keystone and BitBox sign for Safe and Nunchuk.',
+ 'Coincover at Ledger, Bitsurance at BitBox, Transaction Shield at MetaMask.',
+ 'Co-brand devices, SDKs and APIs sold to other companies.'
+];
+const COMP=[
+['Tangem','me',[['in','10 providers. Tangem charges 0% on eligible stablecoin pairs and doesn\'t publish its rate on other pairs. LI.FI is the one provider whose data we could read, and it shows fees credited to Tangem of about 1.18% of the volume in October 2026'],['in','Buying through Mercuryo, MoonPay, Simplex and Unlimit, selling through MoonPay only'],['in','8 assets via Yield.xyz and P2P.org, plus its own Solana validator'],['in','Yield Mode on Aave, for a fee of 15% of yield'],['no','None'],['no','None built in. Tangem\'s help center lists dYdX, Paradex and ApeX among the dApps that can\'t connect over WalletConnect because they use non-standard signature algorithms'],['lim','In the open-source Android code Predictions on Polymarket is enabled from version 6.6. We didn\'t check the iOS code and can\'t see from outside which users or countries get it. Tangem\'s builder fee is 2.5% of the amount traded, a rate it doesn\'t publish and we read from Polymarket\'s data'],['in','Real assets tab: xStocks, Ondo, gold. xStocks aren\'t offered in 30 countries, the US and UK among them'],['in','Tangem Pay is a Visa card through Paera and Rain. Paera\'s terms list 41 jurisdictions, none of them in the EU or the UK'],['no','None'],['no','None. Plus, at $29.99 a month, is a payment card plan'],['plan','Joint Accounts is on the roadmap, and the code for it is switched off behind a feature flag'],['no','None for crypto assets. The Plus payment card carries Visa\'s purchase benefits, which we don\'t count here'],['in','Co-brand from a minimum order of 350 wallets. Resellers get up to 40% off with no minimum order']]],
+['Ledger','sep',[['in','50+ providers. Ledger doesn\'t publish its own fee'],['in','MoonPay and others. Noah converts fiat to stablecoins, including salaries'],['in','Lido, Figment, Kiln'],['in','Morpho, Aave and Compound via Kiln. Midas mTBILL'],['in','Lombard LBTC through Figment, live in Ledger Wallet\'s Discover section since 14 January 2026 with a target of 2.5% a year or more. Ledger\'s fee isn\'t stated'],['in','Hyperliquid via Yield.xyz since May 2026, fee undisclosed. Not available in the US, UK, France, Belgium or Ontario'],['ext','None built in. Since November 2026 Ledger Wallet has connected to Liquid, an interface on Hyperliquid with prediction markets'],['lim','Midas mTBILL only'],['in','CL Card runs on Baanx and Monavate: custodial account, 1% cashback. Exodus now owns both companies'],['in','Crypto Loan since 7 October 2026. It lends USDC and USDT against wBTC and cbBTC on Morpho, via Yield.xyz'],['in','Ledger Recover costs $99.99 a year and requires ID. How many people subscribe is not disclosed'],['in','Ledger Multisig charges a fee on Ethereum only: $10 per admin operation or 0.05% of a transfer. The Block reported criticism of it as a "cash cow" in October 2025'],['in','Up to $50,000 in compensation from Coincover, included in Recover'],['in','Ledger Enterprise, Tradelink']]],
+['Trezor','',[['in','Changelly, ChangeNOW, 1inch, LI.FI, SwapKit. The fee is built into the exchange rate'],['in','8 providers for buying and 3 for selling, compared side by side in Suite. OTC buying via BTC Direct from €50,000'],['in','Everstake. The fee is 10% of rewards on ETH and 7% on SOL'],['in','Steakhouse Prime vault on Morpho since 28 May 2026. Trezor takes 10% of yield through a wrapper contract'],['no','None'],['no','None'],['no','None'],['no','None'],['no','None'],['no','None'],['no','No subscriptions. Paid consultations are no longer sold'],['no','SLIP-39 on the device, free'],['no','None'],['no','None']]],
+['SafePal','',[['in','Its own aggregator, 0.2% per order'],['in','MoonPay (buying and selling), Simplex (buying)'],['in','Validators, Kiln, Tonstakers'],['in','Morpho, and Binance Earn in Binance custody'],['nd','We couldn\'t find a BTC product in the Earn help pages, and Binance Earn\'s coin list isn\'t public'],['in','Hyperliquid built in since November 2025, with SafePal adding 0.05% of its own. SafePal doesn\'t report the revenue'],['in','Polymarket in the Predictions tab since March 2026. SafePal doesn\'t publish a fee, and Polymarket\'s data shows a builder fee of 0.5% since 12 May 2026'],['in','SoDEX: tokenized US stocks, XAUT'],['lim','Fiat24 account with a Swiss IBAN and a virtual Mastercard, 1% conversion. Fiat24 is in maintenance mode and takes no new customers'],['no','None'],['no','None'],['no','None'],['no','None'],['in','Co-brand wallets made to order, resellers, affiliates at 10–20%']]],
+['OneKey','',[['in','Aggregator. OneKey says the fee is "in the quote" and gives no percentage'],['in','Banxa, MoonPay and others. Selling pays out to a bank account or payment card'],['in','Everstake, Stakefish, Lido'],['in','Morpho, Spark, Aave, Ethena, Kamino, Pendle PT'],['in','Babylon'],['in','Hyperliquid. Builder fee 0.08% since 12 October 2026, up from 0.05%. $0.22M in October 2026'],['no','None'],['in','Ondo and xStocks stock tokens through swap, plus perps on stocks and metals on Hyperliquid'],['closed','OneKey Card was shut down in September 2024. The stated reason was "optimizing the product line"'],['in','Aave'],['no','No subscription. Sifu, a paid onboarding service, is $99 an hour'],['no','None'],['no','None'],['in','Enterprise, co-brand']]],
+['Keystone','',[['in','Swap in Nexus. Keystone doesn\'t name the provider'],['ext','Via partner wallets'],['ext','Via partner wallets'],['ext','Via partner wallets'],['no','None'],['ext','Via MetaMask, OKX Wallet, Rabby'],['ext','Via partner wallets'],['ext','Via partner wallets'],['no','None'],['ext','Via partner wallets'],['no','None'],['ext','Safe, Sparrow, Nunchuk'],['no','None'],['in','Co-brand for Solflare, OKX, Safe']]],
+['CoolWallet','',[['in','6 partners, percentage not published'],['closed','The fiat gateway via Bridge shut down on 15 June 2026, with no reason given'],['in','9 assets through Kiln, Everstake, P2P.org and Figment'],['in','Aave. Gauntlet USD Alpha on Morpho since October 2026'],['in','Lombard LBTC. The yield now comes from an options strategy'],['no','None'],['no','None'],['no','None'],['in','WalletConnect Pay. No payment card'],['no','None'],['in','"Lifetime warranty" on the CoolWallet card, $39'],['no','None'],['no','None'],['in','Co-brand (Crypto.com and others)']]],
+['BitBox','',[['in','SwapKit, flat 1.5%'],['in','Pocket, MoonPay, BTC Direct. OTC from €50,000 at BTC Direct and from CHF/EUR 100,000 at Pocket Private'],['no','None'],['no','None'],['no','None'],['no','None'],['no','None'],['no','None'],['in','Bitrefill gift cards, and Lightning in beta'],['no','None'],['no','None'],['ext','Via Nunchuk and others'],['in','Bitsurance, for about 0.3% of the insured amount a year. Germany and Austria only'],['no','None']]],
+['ELLIPAL','',[['in','6 providers'],['in','MoonPay, Simplex, Onramper'],['in','6 assets via Kiln'],['no','None'],['no','None'],['no','None'],['plan','Polymarket was announced in March 2026, but the launch is unconfirmed'],['no','None'],['in','PAYDAO, for paying in stablecoins with an NFC card at a terminal. The fee is 0.5%'],['no','None'],['no','None'],['no','None'],['no','None'],['in','PAYDAO terminals for merchants']]],
+['SecuX','',[['in','Changelly, ChangeNOW'],['in','Changelly, Guardarian'],['lim','ADA only, in the web portal. A launch in the app is unconfirmed'],['no','None'],['no','None'],['no','None'],['no','None'],['no','None'],['in','B2B payment terminals on request, but no payment card or account'],['no','None'],['no','None'],['in','Cyber Athena, a corporate multisig with an HSM'],['no','None'],['in','HSMs, FIDO2 keys, co-brand']]],
+['GridPlus','',[['ext','Via MetaMask, Rabby and others'],['no','None'],['ext','Via third-party wallets'],['ext','Via third-party wallets'],['no','None'],['ext','Via third-party wallets'],['ext','Via third-party wallets'],['ext','Via third-party wallets'],['no','None'],['ext','Via third-party wallets'],['no','None'],['ext','Via third-party wallets'],['no','None'],['no','No co-brand, though there is an open SDK for integrating the Lattice1']]],
+['MetaMask','sep',[['in','0.875%'],['in','Aggregator: MoonPay, Transak, Banxa, Mercuryo, Stripe, PayPal. MetaMask takes 1%'],['in','Its own ETH pool at 15% of rewards, plus Lido and Rocket Pool. SOL goes through Figment'],['in','mUSD and Money Account pay up to 6% until January 2027, then up to 4%. Steakhouse vault on Veda'],['no','No BTC yield product'],['in','Hyperliquid, builder fee 0.10%. $2.0M in October 2026. Not available in the US or UK'],['in','Polymarket, 4% on top of the venue\'s fee. $0.20M of builder fees in October 2026, of which MetaMask keeps 75%, $0.15M'],['in','Ondo, 200+ assets. Geo-blocked in the US, UK and EEA'],['in','MetaMask Card on Mastercard. Metal is $199 a year, cashback 1–3%. Spend is about $3.4M a month (Paymentscan for October 2026, via cryptocards.so)'],['no','No loans, only stablecoin deposits'],['in','Transaction Shield, $9.99 a month. MetaMask gives no subscriber numbers'],['no','None'],['in','Reimbursement of up to $10,000 a month, included in Shield'],['in','Embedded Wallets is free up to 1,000 active wallets, then $69 and $399 a month']]],
+['Phantom','',[['in','0.85%'],['in','Stripe, Apple Pay'],['in','PSOL: 4% of rewards and 0.1% on exit'],['in','CASH stablecoin. Phantom pays the rewards itself, out of its marketing budget'],['no','None'],['in','Hyperliquid, 0.05%. $1.4M in October 2026, half the peak'],['in','Kalshi in the US, $0.01 per contract'],['in','xStocks, Ondo and pre-IPO tokens in swap. Blocked in the US, UK, France, Germany and the Netherlands'],['in','Phantom Cash: an account and a Visa card. US only, SSN required'],['in','Kamino, with PSOL as collateral'],['no','None'],['no','None'],['no','None'],['in','Phantom Connect: embedded wallets and an SDK, free']]],
+['Trust Wallet','',[['in','ThorChain, 1inch, Axelar. Trust Wallet\'s pages disagree on the fee: the comparison with MetaMask says 0.7% in the exchange rate, while the swap FAQ says none'],['in','MoonPay, Simplex, Banxa, Mercuryo, Ramp and Transak for buying, Ramp and MoonPay for selling. Trust Wallet takes no fee itself'],['in','Kiln'],['in','Stablecoin Earn, with $155M+ in deposits as of December 2025'],['ext','None built in, but Venus is reachable through the dApp browser'],['in','Hyperliquid and Aster. Builder fee on Hyperliquid has been 0.10% since 8 October 2026, up from 0.095%. $1.6M in October 2026'],['in','Polymarket, Predict.fun, Hyperliquid HIP-4. No fee of its own'],['in','Ondo, xStocks, bStocks. Not available in the US, UK or EU'],['closed','No payment card. Stablecoin QR payments launched on 16 February 2026 and were switched off on 31 March. Trust Wallet cited "changes at the payment provider"'],['ext','None built in. Venus and Aave work through the dApp browser'],['no','Premium is free'],['no','None'],['no','None'],['in','Agent Kit, TrustConnect SDK']]],
+['OKX Wallet','',[['in','0–0.5% by token pair, on OKX\'s published fee schedule'],['ext','No providers in the wallet. Money goes in and out by transfer through the OKX exchange'],['in','DeFi Earn: Lido, ether.fi, Rocket Pool, Jito. No wallet fee'],['in','USDG Earn pays up to 3.5% out of USDG reserves. DeFi Earn has Aave, Compound, Kamino and Spark'],['in','cbBTC on Aave via DeFi Earn, where the rate is about 0%'],['plan','Onchain Perps on X Layer was a points-only beta as of 10 November 2026, and OKX has said real funds follow from 14 November'],['plan','Outcomes on X Layer. Points only for now, no real money'],['in','Ondo stocks via OKX DEX from $20, with a builder fee of 0.25–0.5%. Gold is PAXG'],['in','OKX Pay and a payment card, on Mastercard in the EEA and per the OKX list elsewhere. The exchange subsidizes the 2–10% cashback'],['in','Crypto-backed loans from Aave on X Layer, 70% limit'],['no','None'],['no','None'],['no','None'],['in','DEX API for partners. No OKX document confirms how much OKX keeps']]],
+['Exodus','',[['in','Aggregates providers. Exodus keeps about 1.7% of volume'],['in','MoonPay, Ramp Network, Banxa, PayPal and others, with selling via MoonPay and Sardine. The fee isn\'t published'],['in','Everstake, 9 assets. Exodus makes $0.5M a quarter'],['no','No yield. Exodus Pay credits points to the XO Cash balance'],['no','Not offered'],['no','None'],['no','None'],['no','None'],['in','Exodus Pay with a debit card. Processing is in-house, through Monavate and Baanx. The 1.6 million cards active in Q3 2026 (711,000 in September alone) are issued for enterprise customers, so they say nothing about card use among Exodus\'s own 1.4 million monthly active users'],['no','None'],['no','None'],['no','None'],['no','None'],['in','XO Swap for other wallets. Partners brought 24% of swap volume in October 2026 (monthly report)']]],
+['Coinbase Wallet','',[['in','Swaps go through DEX aggregators on several chains, with limit orders. Coinbase takes up to 1% per swap'],['in','Via a linked Coinbase account or third parties (Stripe in the US), 130+ countries. Cash-out costs 2–3% via Coinbase, 2–5% via third parties'],['nd','Not on the wallet site, the App Store listing or the terms as of November 2026. Coinbase\'s help center has an article titled "Staking ETH in Wallet", which we couldn\'t open or confirm as current'],['lim','USDC Rewards up to 3.35% APY, rate set by Coinbase. Rolling out in the US with a linked Coinbase account, and not offered in the EU or Canada'],['nd','Not on the wallet site, the App Store listing or the terms as of November 2026, which describe Earn only as USDC Rewards. We couldn\'t open the help center to rule it out'],['in','Hyperliquid since 19 August 2026, up to 50x on 290+ markets. Coinbase\'s fee isn\'t published. Not available in the US, UK or Canada'],['in','Polymarket through a native interface, named as the provider in the wallet terms. Not available in the US, UK or Canada. Coinbase publishes no fee, and the builder code Polymarket lists as Coinbase Wallet has charged 1% since 12 September 2026'],['lim','Tokenized stocks and commodities (NVDA, META, AAPL, GOOG), "rolling out now" per the wallet site. Coinbase doesn\'t publish the fee'],['no','None on the wallet site or help pages'],['nd','Not on the wallet site, the App Store listing or the terms. Coinbase\'s Morpho-based USDC loans against Bitcoin run in the main Coinbase app, per Decrypt (23 September 2026)'],['no','None. Passkey smart wallet or recovery phrase, free'],['no','None on the wallet site or help pages'],['no','None'],['in','Coinbase Wallet SDK and Wallet MCP on Coinbase Developer Platform, plus an affiliate program']]],
+['Binance Wallet','',[['in','In the app a swap is free between major tokens and between a major token and one listed on Binance Alpha, and costs 0.5% when any other token is involved. On the web the major-to-Alpha rate is 0.01%. Bridges and TON swaps are free (fee table updated 29 June 2026)'],['in','Buy with Card inside the wallet takes a card, Apple Pay, Google Pay or Binance Spot balance, through Binance Pay Onchain and a verified Binance account. Fee amounts aren\'t listed and no sell flow is described (FAQ updated 9 September 2026)'],['in','Wallet Earn (Simple Yield and Yield+) covers ETH restaking and SOL liquid staking (BNSOL) through third-party protocols. BNB is listed as supported, but the FAQ doesn\'t say how it is staked. No Binance Wallet fee is listed'],['in','Simple Yield lends stablecoins on Venus and Aave. No Binance Wallet fee is listed'],['in','BTC liquid staking via Lombard, Solv, Lorenzo and Bedrock, earning Babylon and protocol points'],['in','The wallet site lists "Perpetuals". News reports we couldn\'t trace to Binance name Aster on BNB Chain as the provider since 14 January 2026, and the wallet\'s fee isn\'t published'],['in','Predict.fun on BNB Chain since April 2026. Fees are Predict.fun\'s and not collected by Binance. The wallet pays the gas'],['in','Tokenized stocks and ETFs from Ondo Global Markets, held in the user\'s own wallet with no trading fee, only BNB gas. Binance says availability "varies by jurisdiction" and names no countries'],['no','None on the wallet pages'],['in','Web3 Loan in the wallet\'s Earn section offers overcollateralized loans from third-party protocols that Binance doesn\'t name. Users borrow USDT, USDC or BNB against BTCB, ETH, WETH or stablecoins, and no Binance Wallet fee is listed'],['no','None'],['no','None'],['no','None'],['nd','The wallet site lists an API and AI Agent access among its platforms. We found no partner or co-brand offer']]],
+['Bitget Wallet','',[['in','Own liquidity plus SwapKit, deBridge, Relay, SWFT, LayerZero, LI.FI. Fee 0–0.5% same-chain, 0.3–1.3% cross-chain'],['in','Buying through several payment providers, picked automatically. Selling USDT or USDC into 25+ fiat currencies through MoonPay'],['in','Staking and liquid staking inside Earn. Hold2Earn pays for holding sUSDe, USDY, sUSDS or JitoSOL'],['in','Stablecoin Earn Plus puts USDC on Aave (Base): 4% APY on the first $1,000 for 30 days, topped up by Bitget Wallet, which charges no fee on it. Also Morpho vaults, Venus and Kamino'],['nd','No BTC yield product in the help texts'],['in','Hyperliquid with a builder fee, and PopDEX. The user pays 0.09% on market orders and 0.06% on limit orders, and some regions are blocked'],['in','Polymarket, from a $1 deposit. Bitget doesn\'t state a fee, and Polymarket\'s data shows a builder fee of 1% since 18 May 2026. Not in mainland China or regions Polymarket restricts'],['in','Tokenized US stocks and ETFs through Reality (Bitget\'s own issuer), Ondo and xStocks, in supported regions only. Each order carries a 0.5% trading fee'],['in','Visa and Mastercard cards in 50+ countries, with the issuer varying by region. Top-up is free or 1%, FX costs 1.7% and cashback is up to 3%. It also has virtual USD and EUR accounts and QR payments'],['no','None in the help center texts'],['no','None. Social login wallet, free'],['no','None'],['lim','Protection Fund for losses caused by the Bitget Wallet platform, put at $300M on the fund page and $700M on the Earn page. It is a company fund shared with Bitget, not an insurance policy'],['in','Trading API, Bitget Wallet Pay for merchants, partner and affiliate programs']]],
+['Rabby','',[['in','Aggregates DEXs and bridges on EVM chains. Rabby takes 0.25% on swaps and bridges. Wrapping is free, and since July 2026 so are same-chain swaps between stablecoins and between ETH and its wrapped or staked forms'],['no','No on-ramp or off-ramp. On mobile only the GasAccount gas balance can be topped up with Apple Pay or Google Pay, and that money can\'t be withdrawn'],['no','No validator or liquid staking. The extension\'s Staking tab (since 29 May 2026) lists Sky and Spark savings vaults and Uniswap and PancakeSwap liquidity pools, which we count under stablecoin yield'],['in','Mobile has a built-in Aave v3 lending screen since v0.6.43 (November 2025), which the app describes as zero fees. The extension\'s Staking tab adds Sky Savings USDS and Spark Savings USDC and USDT vaults'],['no','None'],['in','Hyperliquid, with a builder fee of 0.02–0.04%. Rabby\'s help page states 0.04%, while nearly all fills in August and October 2026 carried 0.02%. The mobile app also opens Aster and Lighter in an in-app frame'],['ext','A Predict tab opens Polymarket, Opinion and Probable inside the app with the wallet connected. Trading happens on those sites, and no Rabby fee is stated'],['lim','Mobile only. The Market tab (v0.6.60, March 2026) lists Ondo tokenized stocks, Ondo gold and silver ETF tokens, XAUt and PAXG. Buying goes through the ordinary Rabby swap, which charges 0.25%'],['no','None'],['in','Mobile has built-in borrowing on Aave v3 against supplied collateral since v0.6.43 (November 2025), with E-Mode and debt swap. The app describes it as zero fees'],['no','None. The wallet is free'],['ext','Imports Safe multisig accounts. No inheritance product'],['no','None'],['no','None. RabbyKit is a public wallet-connection kit on GitHub and isn\'t sold. DeBank, the parent, sells a data API separately']]],
+['Backpack','',[['in','Backpack\'s wallet fee starts at 0.85% and falls to 0% with the user\'s tier in its points program, and bridges are free. Another Backpack page says the wallet charges nothing on Solana swaps'],['in','MoonPay for both buying and selling, with MoonPay\'s own KYC'],['in','SOL only: native staking with a choice of validator, and bpSOL liquid staking'],['lim','Yield on idle assets is a Backpack Exchange product (custodial), reached from the same app. None in the self-custody wallet'],['no','None'],['lim','Perps are on Backpack Exchange (custodial), in the same app, with instant wallet-to-exchange transfers'],['lim','None in the self-custody wallet. Backpack Exchange (custodial, same app) opened its Unified Prediction Portfolio as an invite-only private beta on 13 January 2026, and the article, updated 16 July 2026, still describes a beta'],['lim','US stocks via Backpack Securities and the Exchange. The wallet connects for tokenized stock redemption'],['no','None. Fiat wires exist only on the Exchange'],['lim','Borrow and Lend is a Backpack Exchange product (custodial), not in the wallet'],['no','None'],['ext','Via Squads or Realms on Solana and Safe on Ethereum, signing with Ledger, Trezor or Keystone. No built-in multisig'],['no','None'],['lim','The wallet has only a collaboration application form for projects. Backpack Exchange runs an API Broker Program that rebates 20% to 50% of trading fees on partners\' API orders, and there is no co-brand offer']]],
+['Uniswap Wallet','',[['in','Uniswap liquidity across 21+ networks. Uniswap Labs\' fee has been 0% since 27 December 2025'],['in','Buying via MoonPay, Robinhood, Transak, Topper or BinancePay. Selling stablecoins and network tokens through an off-ramp provider'],['no','None on the wallet site'],['in','Earn since 30 July 2026: USDC, USDT and ETH into Gauntlet-curated Morpho vaults on Ethereum. No Uniswap fee'],['no','None'],['no','None'],['no','None'],['in','Tokenized securities (SpaceX, Apple, Tesla, NVIDIA and others) in the wallet since 12 June 2026, and Robinhood Stock Tokens on Robinhood Chain since July 2026. Issuers set eligibility, KYC and country limits. No Uniswap app fee'],['no','None'],['no','None'],['no','None'],['no','None'],['no','None'],['in','Uniswap API powers swaps inside MetaMask, OKX, Ledger, Fireblocks and Anchorage Digital products. Uniswap Labs charges no fee on it, and there is no co-brand offer']]],
+['Robinhood Wallet','',[['in','0x and LI.FI. Robinhood takes 0.80% same-chain and 0.73% cross-chain, plus 0.05–0.12% to the provider. Waived on some swaps into Robinhood Chain'],['in','Robinhood Connect (debit card, bank account or Robinhood buying power) and Sardine (cards), where available'],['no','None in the Wallet. Staking is a Robinhood Crypto product in the custodial main app, where fees take 25% of rewards'],['no','None in the Wallet. Robinhood Earn lends USDG on Morpho at about 7% APY in the main Robinhood app, where it uses a separate self-custody wallet and is rolling out in the US'],['no','None'],['in','Lighter on Robinhood Chain, USDG margin. Robinhood\'s fee isn\'t published. Not for residents of the US, UK, Canada, Switzerland, UAE or Singapore'],['no','None in the Wallet. Robinhood\'s prediction markets are in the custodial app'],['in','Robinhood Stock Tokens on Robinhood Chain in 120+ countries, traded via Uniswap, Rialto, Lighter, Arcus and 1inch. Not for US persons. Selected users pay a reduced 0.05% Robinhood fee on Stock Token swaps until 31 December 2026'],['no','None in the Wallet. Robinhood\'s cards belong to its brokerage and banking apps'],['no','None built into the Wallet. Lending protocols on Robinhood Chain (Morpho, Spark, Tenor Finance) are third-party dapps the Wallet can connect to'],['no','None. Backup to iCloud or Google Drive is free'],['no','None'],['no','None for the Wallet. For Robinhood Earn in the main app, Robinhood holds a Lloyd\'s of London and Relm policy that covers Robinhood itself and gives users no claim'],['no','None for the Wallet. Robinhood Connect, an on-ramp and off-ramp API that other wallets and dapps embed, belongs to Robinhood Crypto']]],
+];
+const SRC=A=>[
+['Tangem',[A('tangem.com/en/pricing/','pricing'),A('tangem.com/en/tangem-pay/','Tangem Pay'),A('tangem.com/docs/en/tangem-visa-tariffs.pdf','Visa card fees'),A('www.paera.com/tangempay','Paera terms'),A('tangem.com/en/help-center/yield-mode/','Yield Mode'),A('tangem.com/en/help-center/swap/','swap'),A('tangem.com/en/help-center/selling-crypto/','selling'),A('tangem.com/en/help-center/tangem-dapps/','dApp'),A('tangem.com/en/help-center/fund-transfers/transaction-fees/','Smart Gas'),A('tangem.com/en/tokenized-metals/','metals'),A('tangem.com/en/blog/post/yield-mode-update/','Yield Mode pause'),A('tangem.com/en/blog/post/rwa-section/','Real assets'),A('tangem.com/en/blog/post/how-to-avoid-high-fees-paying-with-crypto/','EU plans'),A('tangem.com/en/blog/post/crypto-inheritance-family-access-after-death','on inheritance'),A('tangem.com/en/blog/post/stake-sol-tangem-validator/','own validator'),A('community.tangem.com/roadmap','roadmap'),A('github.com/tangem/tangem-app-android','app code'),A('github.com/tangem/tangem-yield-module-contracts','Yield contracts'),A('github.com/tangem/tangem-gasless-transactions-contracts','gasless contracts'),A('www.theblock.co/post/394087/wallet-maker-tangem-doubles-annual-revenue-to-more-than-60-million-as-self-custody-shifts-toward-active-use','2025 revenue: The Block'),A('tangem.com/en/co-branding/','co-branding'),A('tangem.com/en/blog/post/custom-tangem-wallet/','co-brand minimum order'),A('tangem.com/en/zero-fees/','0% stablecoin swaps'),A('tangem.com/en/help-center/spending-transactions/','cashback rules'),A('tangem.com/en/help-center/market/real-assets/','Real assets: regions')]],
+['On-chain data',[A('defillama.com/protocol/metamask-perps','MetaMask Perps'),A('defillama.com/protocol/phantom-perps','Phantom Perps'),A('defillama.com/protocol/trust-wallet-perps','Trust Wallet Perps'),A('defillama.com/protocol/onekey-perps','OneKey Perps'),A('defillama.com/protocol/metamask-wallet','MetaMask Wallet'),A('defillama.com/protocol/pendle','Pendle'),A('defillama.com/yields','yield rates'),A('hyperliquid.gitbook.io/hyperliquid-docs/trading/builder-codes','builder codes'),A('hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/nonces-and-api-wallets','Hyperliquid agents'),A('www.coingecko.com/research/publications/top-hyperliquid-builders','CoinGecko on builders and their users'),A('stakewiz.com','Solana validators'),A('stats-data.hyperliquid.xyz/Mainnet/builder_fills/0x9b12e858da780a96876e3018780cf0d83359b0bb/20261012.csv.lz4','Hyperliquid builder fills: OneKey on 12 October 2026'),A('stats-data.hyperliquid.xyz/Mainnet/builder_fills/0x5af1b5f44207784dcb850bbb4143c5dcd1885f71/20261008.csv.lz4','Hyperliquid builder fills: Trust Wallet on 8 October 2026'),A('stats-data.hyperliquid.xyz/Mainnet/builder_fills/0xad9be64fd7a35d99a138b87cb212baefbcdcf045/20261015.csv.lz4','Hyperliquid builder fills: Rabby on 15 October 2026'),A('api.llama.fi/summary/fees/metamask-predictions?dataType=dailyFees','DefiLlama: MetaMask predictions fees'),A('li.quest/v2/analytics/transfers?integrator=tangem','LI.FI analytics: transfers and integrator fees (Tangem, and the same call for OneKey and SafePal)'),A('clob.polymarket.com/builder/trades?builder_code=0xe800ac699573bf8d6aa3408870b901c880ca12ca2804316102e9b5685f340cfe','Polymarket: builder trades under Tangem\'s code'),A('clob.polymarket.com/fees/builder-fees/0xe800ac699573bf8d6aa3408870b901c880ca12ca2804316102e9b5685f340cfe','Polymarket: Tangem\'s builder fee rate'),A('data-api.polymarket.com/v2/builders/leaderboard?timePeriod=MONTH','Polymarket: builder leaderboard'),A('docs.polymarket.com/programs/builders/fees.md','Polymarket: builder fee docs'),A('api.stakewiz.com/validator/BbM5kJgrwEj3tYFfBPnjcARB54wDUHkXmLUTkazUmt2x','Stakewiz: Tangem\'s Solana validator'),A('kobe.mainnet.jito.network/api/v1/validators/BbM5kJgrwEj3tYFfBPnjcARB54wDUHkXmLUTkazUmt2x','Jito: tips at Tangem\'s validator'),A('etherscan.io/address/0x37e7e93093ae3a8aaef4a0d41dbd9c037508eb60','Yield Mode fee receiver on Ethereum'),A('github.com/tangem/tangem-app-ios','Tangem iOS app code'),A('github.com/trustwallet/assets','Trust Wallet assets repo: Solana validator list'),A('tronsave.io','TronSave: Energy rental prices'),A('www.coolwallet.io/blogs/blog/rent-energy-tron','CoolWallet: Energy rental example'),A('api.llama.fi/summary/fees/etherfi-borrowing-market?dataType=dailyFees','DefiLlama: ether.fi loan interest'),A('api.llama.fi/summary/fees/binance-alpha?dataType=dailyRevenue','DefiLlama: Binance Alpha'),A('paymentscan.xyz','Paymentscan: card spend')]],
+['Hardware wallets',[A('www.ledger.com/blog-perpetual-trading','Ledger: perps'),A('www.ledger.com/blog-release-notes-q2-2026-free-from-compromise','Ledger: Q2 2026 release'),A('shop.ledger.com/pages/ledger-recover','Ledger Recover'),A('www.theblock.co/post/376083/ledgers-new-native-multisig-rollout-sparks-criticism-over-cash-cow-fee-model','Ledger Multisig'),A('www.coindesk.com/tech/2026/10/13/ledger-says-spy-chip-inside-cryptobilis-ledger-devices-transmitted-wallet-keys-over-mobile-network','Ledger: implant'),A('trezor.io/ethereum-staking','Trezor: staking'),A('cointelegraph.com/news/trezor-usdc-usdt-yield-morpho-trezor-suite','Trezor: Morpho'),A('www.e15.cz/kryptomeny/cesky-trezor-utrzil-pres-miliardu-a-upravuje-byznys-nema-viset-jen-na-prodeji-kryptopenezenky-1431312','Trezor: revenue'),A('www.safepal.com/bank','SafePal Bank'),A('fiat24.com','Fiat24'),A('safepalsupport.zendesk.com/hc/en-us/articles/360061264311-SafePal-Swap-Bridge-Fee','SafePal: fee'),A('help.onekey.so/en/articles/13988593-onekey-app-wallet-service-fee-explanation','OneKey: fees'),A('help.onekey.so/en/articles/11461193-onekey-card-service-sunsetting-announcement','OneKey Card'),A('keyst.one/nexus','Keystone Nexus'),A('www.coolwallet.io/blogs/blog/partners-tronify','CoolWallet and Tronify'),A('www.coolwallet.io/blogs/blog/curated-yield-earn-onchain-usdc-yield-on-coolwallet','CoolWallet: Curated Yield'),A('support.bitbox.swiss/en_US/swapkit-krypto-swap-bitboxapp','BitBox: swap'),A('www.bitsurance.io','Bitsurance'),A('www.ellipal.com/blogs/news/ellipal-hot-wallet-service-discontinuation-faq','ELLIPAL: shutdown'),A('docs.gridplus.io','GridPlus'),A('www.spendnode.io/blog/ledger-btc-yield-lombard-figment-self-custody-bitcoin-staking/','spendnode.io: Ledger BTC yield'),A('www.ledger.com/blog-btc-yield-ledger-wallet-lombard-via-figment','Ledger: BTC yield'),A('cointelegraph.com/press-releases/safepal-partners-with-sodex-to-launch-unitree-rwa-vault-bringing-asias-leading-robotics-company-onchain-to-self-custody','SafePal: 30 million users'),A('www.thebigwhale.io/article/investigation-legder-a-giant-at-a-crossroads','The Big Whale: Ledger investigation, February 2024'),A('www.safepal.com/en/blog/security-update','SafePal: security notice'),A('trezor.io/trezor-suite','Trezor Suite')]],
+['Software wallets',[A('support.metamask.io/trade/metamask-fees/','MetaMask: fees'),A('support.metamask.io/trade/perps/how-to-trade-perps/','MetaMask: perps'),A('support.metamask.io/manage-crypto/transactions/transaction-shield/','Transaction Shield'),A('metamask.com/card','MetaMask Card'),A('metamask.com/news/metamask-launches-money-account-bringing-defi-yield-and-global-spending-to-stablecoin-balances','MetaMask Money Account'),A('help.phantom.com/hc/en-us/articles/44800531617939-Cash-fees','Phantom Cash'),A('trustwallet.com/blog/company/hyperliquid-now-live-in-trust-wallet','Trust Wallet: Hyperliquid'),A('trustwallet.com/blog/company/brc-20-inscription-support-deprecation','Trust Wallet: BRC-20'),A('my.okx.com/pay','OKX Pay'),A('www.stocktitan.net/news/EXOD/exodus-reports-third-quarter-2026-tt60awiv6sy5.html','Exodus Q3 2026'),A('www.stocktitan.net/sec-filings/EXOD/10-q-exodus-movement-inc-quarterly-earnings-report-480779ae76fe.html','Exodus 10-Q'),A('www.sec.gov/Archives/edgar/data/1821534/000162828026072336/exod-20260930.htm','Exodus 10-Q on sec.gov'),A('finviz.com/news/400836/exodus-movement-inc-september-2026-monthly-metrics','Exodus: September 2026 metrics'),A('wallet.coinbase.com/terms-of-service','Coinbase Wallet: terms'),A('help.coinbase.com/en/wallet/dapps-and-defi/eth-staking','Coinbase: Staking ETH in Wallet'),A('decrypt.co/379091/borrow-against-bitcoin-fixed-rate-coinbase-morpho','Decrypt: Coinbase loans on Morpho'),A('www.binance.com/en/support/faq/detail/3b88e4952fe040078cb39046609f6e99','Binance Wallet: Buy with Card'),A('www.binance.com/en/support/faq/detail/3cd105b940ef4a438209be00b169126a','Binance Wallet: Simple Yield'),A('www.binance.com/en/support/faq/detail/8244cf870edb4cc2be4972c5c6b14e54','Binance Wallet: Web3 Loan'),A('www.binance.com/en/support/faq/detail/7d6848273e254805ba2f65fa5a5f3319','Binance Wallet: Ondo tokenized securities'),A('web3.bitget.com/en/helpCenter','Bitget Wallet: help center'),A('web3.bitget.com/en/stablecoinEarn','Bitget Wallet: Stablecoin Earn'),A('web3.bitget.com/en/about/safety-commitment','Bitget Wallet: Protection Fund'),A('support.rabby.io/en/articles/14150488-understanding-rabby-perps-fees','Rabby: perps fees'),A('support.rabby.io/en/articles/15956135-0-swap-fee-token-pairs','Rabby: 0% swap pairs'),A('support.rabby.io/en/articles/15338818-what-is-gasaccount-and-how-to-use-it','Rabby: GasAccount'),A('raw.githubusercontent.com/RabbyHub/rabby-mobile/develop/apps/mobile/src/changeLogs/0.6.43.md','Rabby mobile: Aave lending'),A('raw.githubusercontent.com/RabbyHub/rabby-mobile/develop/apps/mobile/src/changeLogs/0.6.56.md','Rabby mobile: Aster and Lighter'),A('raw.githubusercontent.com/RabbyHub/rabby-mobile/develop/apps/mobile/src/changeLogs/0.6.57.md','Rabby mobile: Predict'),A('raw.githubusercontent.com/RabbyHub/rabby-mobile/develop/apps/mobile/src/changeLogs/0.6.60.md','Rabby mobile: Market tab'),A('raw.githubusercontent.com/RabbyHub/Rabby/develop/changeLogs/09391.md','Rabby extension: Staking tab'),A('github.com/RabbyHub/rabbykit','RabbyKit'),A('learn.backpack.exchange/articles/unified-prediction-portfolio-backpack','Backpack: prediction beta'),A('support.backpack.exchange/exchange/programs/api-broker-program.md','Backpack: API Broker Program'),A('blog.uniswap.org/tokenized-securities-are-live','Uniswap: tokenized securities'),A('blog.uniswap.org/robinhood-chain-is-live','Uniswap: Robinhood Chain'),A('blog.uniswap.org/metamask-integrates-uniswap-api-for-native-swaps','Uniswap API'),A('robinhood.com/us/en/support/articles/crypto-staking/','Robinhood: staking'),A('robinhood.com/us/en/support/articles/robinhood-earn/','Robinhood Earn'),A('robinhood.com/us/en/support/articles/stock-token-swap-fee-promo/','Robinhood: Stock Token fee'),A('robinhood.com/eu/en/crypto/chain/ecosystem/','Robinhood Chain ecosystem'),A('docs.robinhood.com/crypto/connect/','Robinhood Connect'),A('www.stocktitan.net/news/EXOD/exodus-reports-fourth-quarter-and-full-year-2024-results-provides-bztjlnwyok7w.html','Exodus: 2024 results and monthly active users'),A('www.certik.com/blog/bitget-wallet-pivot-to-payments','CertiK: Bitget Wallet card spend'),A('web3.bitget.com/en/blog/articles/alvin-kan-coo-letter-2026','Bitget Wallet: COO letter'),A('www.theblock.co/news/business/2026-10-27-robinhood-chain-brings-in-26-million-crypto-revenue-rises-20-q2-431935','The Block: Robinhood Chain revenue'),A('crypto.news/phantom-ends-sui-support-on-sept-24/','crypto.news: Phantom ends Sui support'),A('cryptoticker.io/en/phantom-wallet-ends-sui-monad-support/','CryptoTicker: Phantom ends Monad and Sui support')]],
+['Yield, RWA, derivatives',[A('docs.morpho.org/build/earn/concepts/generate-revenue','Morpho: integrator revenue'),A('docs.yield.xyz/docs/fees','Yield.xyz: fees'),A('research.lido.fi/t/rewards-share-program-committee-updates/11107','Lido: program'),A('docs.ondo.finance/ondo-global-markets/overview','Ondo Global Markets'),A('assets.backed.fi/legal-documentation','xStocks: documents'),A('blog.kraken.com/product/xstocks/25-billion-in-total-transaction-volume','xStocks: volumes'),A('www.coingecko.com/research/publications/rwa-report-2026','CoinGecko RWA 2026'),A('developers.jup.ag/docs/recurring','Jupiter Recurring'),A('docs.cow.fi/governance/fees/partner-fee','CoW: partner fee'),A('insights.derive.xyz/derives-api-broker-program-is-now-live/','Derive: brokers')]],
+['Cards, payments and specialized products',[A('etherfi.gitbook.io/etherfi/products/borrow/lending-market-parameters','ether.fi: loan parameters'),A('help.ether.fi/en/articles/262374-how-does-cashback-work','ether.fi: cashback'),A('help.gnosispay.com/articles/8169303866','Gnosis Pay: card shutdown'),A('usa.visa.com/content/dam/VCOM/download/merchants/visa-usa-interchange-reimbursement-fees.pdf','Visa: US interchange'),A('cryptocards.so/en/blog/crypto-card-statistics','cryptocards.so: card volumes from Paymentscan'),A('www.spendnode.io/crypto-cards/ready/','spendnode.io: Kulipa'),A('www.spendnode.io/crypto-cards/stats/august-2026/','spendnode.io: August 2026 statistics'),A('mercuryo.io','Mercuryo'),A('safefoundation.org/blog/safe-10m-revenue-100m-target-2030','Safe: revenue'),A('github.com/ZcashCommunityGrants/zcashcommunitygrants/issues/152','Zcash grant to Ledger'),A('casa.io/pricing','Casa'),A('nunchuk.io/pricing','Nunchuk'),A('bitkey.world/blog/bitkeys-inheritance-feature-a-technical-deep-dive','Bitkey: inheritance'),A('web3.bitget.com/en/card','Bitget Wallet Card'),A('www.okx.com/card','OKX Card'),A('www.bleap.finance','Bleap'),A('www.theblock.co/post/375608/kadena-winds-down-operations-kda-token-drops-60','The Block: Kadena winds down'),A('www.theblock.co/news/business/2026-10-02-blast-ethereum-layer-2-shutting-down-417583','The Block: Blast winds down')]],
+['Revenue table',[A('api.llama.fi/overview/fees','DefiLlama: fee and revenue series for MetaMask, Phantom, Trust Wallet, Rabby, OneKey, Bitget Wallet, Coinbase Wallet (listed as Base app), Binance Wallet and Uniswap Labs, summed by us'),A('www.sec.gov/Archives/edgar/data/1821534/000162828026072336/R47.htm','Exodus 10-Q for Q3 2026: revenue by line'),A('www.theblock.co/post/394501/ledger-appoints-former-circle-exec-cfo-new-york-office-firm-explores-us-ipo','The Block: Ledger revenue'),A('cc.cz/meli-druhy-nejlepsi-rok-v-historii-presto-propousteli-nesvadime-to-na-ai-rika-sef-miliardoveho-trezoru/','cc.cz: Trezor in 2026'),A('www.e15.cz/kryptomeny/cesky-trezor-utrzil-pres-miliardu-a-upravuje-byznys-nema-viset-jen-na-prodeji-kryptopenezenky-1431312','e15.cz: Trezor 2025 revenue'),A('www.dlnews.com/research/internal/open-source-security-trezor-ceo-matej-zak-trezor-safe-7-future-self-custody/','DL News: Trezor hardware and software split'),A('paymentscan.xyz/cards/metamask','Paymentscan: MetaMask Card spend'),A('web3.okx.com/dex-fees','OKX: DEX fee schedule'),A('www.forbes.com/companies/phantom/','Forbes: Phantom company profile'),A('paymentscan.xyz/cards/safepal','Paymentscan: SafePal card spend'),A('api.hyperliquid.xyz/info','Hyperliquid info API: referral rewards'),A('hyperliquid.gitbook.io/hyperliquid-docs/referrals','Hyperliquid: referral docs'),A('finviz.com/news/420632/exodus-movement-inc-october-2026-monthly-metrics','Exodus: October 2026 monthly metrics'),A('or.justice.cz/ias/ui/vypis-sl-firma?subjektId=727447','Czech register: Trezor Company accounts'),A('www.cfnews.net/Acces-libre/Ledger-conserve-sa-corne-436190','CFNews: Ledger hardware and services split'),A('cointelegraph.com/news/crypto-card-access-doesnt-match-global-demand-tangem-says','Cointelegraph: Tangem Pay')]],
+];
+const Q=['Who it is for','What they do today','What changes in the product','Why they would choose it','Who pays, and for what','How Tangem gets its share','What eats into the revenue','What Tangem already has','Who has done it, and the numbers','How to test demand','When to stop'];
+const TIER={1:'First wave',2:'Next wave',3:'Deferred'};
+/* Hypotheses 01 to 10. HYP_A holds the wave: 1 first, 2 next, 3 deferred. EX_A holds the texts:
+   card and sheet fields for waves 1 and 2, and s / why3 / back for a deferred row. */
+const HYP_A=[
+{tier:1},
+{tier:2},
+{tier:2},
+{tier:3},
+{tier:3},
+{tier:2},
+{tier:3},
+{tier:2},
+{tier:2},
+{tier:2}
+];
+const EX_A=[
+{s:'Perps on Hyperliquid',lvl:'new integration',
+ idea:'Perps trading inside the app, where the card signs deposits and withdrawals and a key on the phone signs orders.',
+ need:'$167M of monthly volume at 0.05%. OneKey ran about $330M in October 2026.',
+ comp:'11 of 22 have perps. OneKey, a hardware wallet, made $1.31M in 12 months.',
+ rev:'Tangem keeps the whole builder fee, which arrives on-chain. $1M a year takes $167M of monthly volume at 0.05%. Hyperliquid\'s own fee of 0.015–0.045% comes on top of the builder fee.',
+ proof:'11 of the 22 competitors have perps built in, and each one\'s builder fee can be read on-chain. In October 2026 MetaMask made $2.0M, Trust Wallet $1.6M, Phantom $1.4M and OneKey $0.22M. OneKey, a hardware wallet and the closest case to Tangem, made $1.31M over 12 months with a six-week gap in the series, and its revenue rose 24% on flat volume of about $330M after it raised its fee from 0.05% to 0.08% on 12 October 2026.',
+ has:'The open-source code has no perps module. Card EIP-712 signing works, and the SDK supports HyperEVM but not HyperCore. Predictions on Polymarket, in early rollout, is the nearest precedent.',
+ risks:['Geo-blocking needs a legal review per country, and every wallet that publishes a list excludes the US and the UK.',
+  'Revenue depends on a few accounts, since about 1% of addresses do 70% of the volume.',
+  'A stolen phone key cannot withdraw, but it can lose the trading balance through bad trades.'],
+ test:['Before any build, 2 weeks. Count Tangem users who already open Hyperliquid over WalletConnect, open a waitlist in permitted countries and build a testnet prototype. Stop if fewer people join than a threshold Tangem sets.',
+  'After the integration, a 60-day beta for 20,000 people from the waitlist. Stop if fewer than 100 trade, or if beta volume without its largest account, scaled to the user base in permitted countries, is below $167M a month.']},
+{s:'Cheap USDT transfers on TRON',lvl:'server only',
+ idea:'Tangem\'s server rents Energy, the TRON resource a transfer uses, instead of burning TRX, and keeps part of the saving.',
+ need:'333,000 payments a month at a $0.25 margin, or 1.4 million at today\'s $0.06.',
+ comp:'CoolWallet has rented Energy since February 2026. No wallet reports what it earns from it.',
+ rev:'At TronSave\'s public price on 13 November 2026 renting saves about $1.27 on the two transactions a payment needs, and a 30% user discount leaves Tangem about $0.06 of it. $1M a year takes 1.4 million payments a month at $0.06, or 333,000 at $0.25. Tangem\'s open-source code adds no markup today.',
+ proof:'CoolWallet has rented Energy through Tronify since February 2026 and claims savings of 30% or more. Its own example pays 4.24 TRX with rental against 6.43 TRX burned, a saving of 33.9%. It does not say what it earns from this, and no other wallet does either. We found no wholesale Energy quote.',
+ has:'Smart Gas, which lets the user pay the TRON fee in USDT with one tap, already works. The open-source code converts at the CoinGecko rate. It also prepares payment with the address\'s own Energy and a rule to pay in TRX if that is cheaper.',
+ risks:['Tangem pays for Energy on two transactions per payment and holds a TRX float.',
+  'The pair is not atomic, so if the transfer fails the relayer has already paid.',
+  'The open-source code shows no markup, but if the relayer keeps a margin on the server, the gain is smaller by that much.'],
+ test:['Count USDT transfers on TRON a month. Stop under 100,000, which is about $300K a year at $0.25.',
+  'Get a wholesale Energy quote for the two transactions. Stop if it is above $2.57.',
+  'A/B test 10% of transfers, renting against burning. Stop if the margin is below $0.25 at a 30% discount, or if errors go up.']},
+{s:'Tangem validator on a second network',lvl:'servers',
+ idea:'Run Tangem\'s own validator on a second network, as it does on Solana with about 1.24 million SOL staked.',
+ need:'About $400M of stake at Solana\'s rates. Tangem has about $100M on Solana, and a second network is smaller.',
+ comp:'Trust Wallet\'s Solana validator earned $0.40M in 12 months. Trezor takes 7% of SOL rewards.',
+ rev:'Tangem\'s Solana validator takes a 5% commission on about $100M of stake, about $0.25M a year at today\'s price, before MEV tips and block rewards. $1M a year takes about $400M of stake on the whole fee. The real gain is smaller, because the provider may already pass on a share that is not published, so this is a margin fix and not a $1M line.',
+ proof:'Tangem\'s own Solana validator is the nearest example. Trezor takes 10% of rewards on ETH and 7% on SOL through Everstake, and Phantom takes 4% on PSOL. Staking is a small line wherever it is measured. Exodus made $2.5M from it over 12 months. Trust Wallet\'s Solana validator earned $0.40M in commission over 12 months, and Phantom\'s staking pool kept $6K in October 2026.',
+ has:'Staking is live for 8 assets. The Solana validator has been offered first in the app since March 2025. On other networks stakers delegate to validators the provider recommends. Liquid staking for ETH is on the public roadmap.',
+ risks:['Running a validator means infrastructure, on-call shifts and validator keys on servers.',
+  'The network penalizes downtime and double signing.',
+  'Where slashing exists, delegators take the loss and will expect Tangem to cover it.'],
+ test:'In one to two weeks, work out what the Solana validator earns above what the provider used to pay. Stop if that gain, or the expected fee on the second network, is below the yearly cost of running a validator. After launch, stop if the validator gets less than 30% of new stake while listed first.'},
+{s:'Selling for fiat',
+ why3:'Tangem\'s sell volume is not published, and $1M a year takes $11M of sell volume a month at 0.75%.',
+ back:'If Tangem\'s own data shows sell volume near $11M a month.'},
+{s:'Mobile Wallet to card upgrade',
+ why3:'No wallet has published this conversion, and $1M a year takes 33,000 extra card sets.',
+ back:'If a balance-triggered offer at least doubles card purchases in a small test.'},
+{s:'Second yield protocol',lvl:'new contract and audit',
+ idea:'Add a Morpho vault next to Aave in Yield Mode, Tangem\'s stablecoin yield feature, to keep balances rather than to add revenue.',
+ need:'$0.9–1.5B moved to the second protocol. Yield Mode holds roughly $100M (est.).',
+ comp:'Trezor, Ledger and four more wallets have Morpho vaults. Uniswap Wallet offers them with no fee.',
+ rev:'Tangem keeps 15% of the yield, as now. The gain is $33–53K a year per $50M that moves, because Steakhouse USDC vaults on Morpho paid 0.44–0.71 percentage points more than Aave. The Yield Mode balance is about $100M (est.), so the whole gain is at most about $0.1M a year. This protects balances more than it adds revenue.',
+ proof:'Trezor launched a Steakhouse Morpho vault in May 2026 and takes 10% of the yield. CoolWallet, Ledger, SafePal, OneKey and Bitget Wallet have Morpho vaults too. Uniswap Wallet has offered Gauntlet\'s Morpho vaults with no fee of its own since 30 July 2026, so Tangem\'s 15% now sits next to a free alternative.',
+ has:'Yield Mode on Aave is live on 8 networks, with one protocol per asset. Version three of the contract has a soft exit from the pool for when liquidity runs short. Liquidity Monitoring is announced and not yet switched on.',
+ risks:['Tangem has to build the adapter, audit the new contract, move every user with a card tap and pay for risk monitoring.',
+  'When vault curators lost depositors\' money, as with Stream and Resolv, the damage reached the brand of the interface.',
+  'For USDT, and on Base, the vaults paid no more than Aave on the 30-day average.'],
+ test:'Show Yield Mode users on Ethereum a sign-up screen for the second source before any contract work. Stop if the fee gain on the balance that signs up does not pay for the audit.'},
+{s:'Yield reserve for Tangem Pay',
+ why3:'Revenue is flat, and Tangem\'s open-source code already has a yield account inside Tangem Pay.',
+ back:'If Tangem Pay grows past its first 5,000 cards and the in-card yield account does not ship.'},
+{s:'Co-brand with a revenue share',lvl:'app',
+ idea:'The partner gets a batch of cards plus a share of the fees that the holders of those cards pay.',
+ need:'Not reached. 8,000 co-brand wallets give $0.3–0.6M at best.',
+ comp:'No manufacturer has disclosed a split of service revenue. Keystone and CoolWallet sell batches.',
+ rev:'Tangem gives up 20–30% of fees it keeps in full today. It pays only if the partner raises activity per card by 25–43%. The four projects on Tangem\'s co-branding page total at least 8,000 wallets. At an Exodus user\'s revenue that is $0.3–0.6M a year at best. Wholesale revenue comes on top.',
+ proof:'No manufacturer has disclosed a split of service revenue on co-brand devices. Keystone and CoolWallet sell batches. Mass-market apps do not need a card, because an embedded wallet costs them $0.04–0.06 per active user a month on Privy\'s and Para\'s price lists.',
+ has:'Co-brand exists, with design, packaging and a landing page for the partner. Tangem\'s blog sets the minimum batch at 350 wallets. Its co-branding page lists Shiba with 5,000+ and Kaspa, Tron and ChangeNOW with 1,000 each.',
+ risks:['The share has no end date, and the wholesale discount, customization and an account manager come on top.',
+  'Some co-brand cards go to people who would have paid full price at retail.',
+  'The $0.3–0.6M holds only if every card is as active as an Exodus user.'],
+ test:'Offer the share to two current partners on a new batch. Compare service revenue per card with the same partner\'s previous batch over 90 days. At a 30% share the new batch has to earn 43% more per card to break even, and at 20% it has to earn 25% more. Stop if it does not, or if the partner does not reorder within 6 months.'},
+{s:'Tangem Pay in Europe',lvl:'licensed partner',
+ idea:'Launch Tangem Pay in the EU and the UK as a paid plan without cashback, because interchange, the merchant bank\'s fee to the card issuer, is capped there at 0.2–0.3%.',
+ need:'2,800 subscribers at $29.99 a month. Tangem Pay\'s first release is 5,000 cards.',
+ comp:'MetaMask, Bitget Wallet, OKX and Bleap run cards in Europe. Three smaller programs are closing.',
+ rev:'Capped EU interchange cannot fund 1% cashback. MetaMask Card\'s $3.4M of monthly spend would yield $7–10K at the cap. $1M a year takes about 2,800 subscribers at $29.99 a month, today\'s Plus price with cashback, before provider costs.',
+ proof:'Large brands keep their European programs. MetaMask Card takes sign-ups in the UK and 23 of the 27 EU countries, and Bitget Wallet, OKX and Bleap also run cards there. Three smaller programs are closing. Kulipa wound down in July 2026, Fiat24 takes no new customers and Gnosis Pay closes its own card on 20 December 2026.',
+ has:'Tangem Pay is live with US bank details only, in 41 jurisdictions, none in the EU or the UK. Its first release is limited to 5,000 cards (Cointelegraph, 7 October 2026). Tangem\'s blog said on 12 June 2026 that a UK and EU launch is planned for 2026.',
+ risks:['The provider charges for the account, for KYC and for each card, and Stripe\'s EU price is €3.50 a card.',
+  'The program depends on a licensed provider at a time when smaller European card programs are closing.',
+  'EU law bans paying interest on stablecoins, so yield is possible only through a DeFi protocol.'],
+ test:'Open a waitlist with a refundable prepayment toward the plan. Stop if fewer than 2,800 prepay in 90 days, or if provider costs exceed plan and conversion revenue.'},
+{s:'Paid membership',lvl:'app',
+ idea:'An optional paid package of reimbursement on checked transactions, priority support and a tax report.',
+ need:'14,000 subscribers at about $10 a month. Ledger Recover had a few thousand on 6 million devices.',
+ comp:'Only 3 of 22 sell paid protection. MetaMask Transaction Shield costs $9.99 a month.',
+ rev:'The price is about $10 a month. We assume payouts of 25% of the price and a 15% store fee. On those costs $1M a year takes 14,000 paying subscribers. Support and the tax report are not in that count.',
+ proof:'Only 3 of the 22 competitors sell paid protection. MetaMask Transaction Shield costs $9.99 a month and reimburses up to $10,000 a month. The one outside figure is Ledger Recover, with a few thousand subscribers on more than 6 million devices (The Big Whale, February 2024). Trezor stopped selling paid consultations.',
+ has:'The Blockaid check in WalletConnect, the address book and the warnings are free. Tangem charges $29.99 a month for the Plus plan on the payment card and has no protection subscription. Its pricing page says of the wallet that there is no subscription.',
+ risks:['Tangem pays the reimbursements and has to check claims, staged thefts included.',
+  'Reviewing claims means storing the check\'s verdict on every transaction, which is data on users\' transactions.',
+  'A partner\'s tax report costs €49–199 a user, which can exceed a year of the subscription at about $10 a month.'],
+ test:'Show 5% of users an offer page with a price and a refundable prepayment. Stop if the share who prepay, applied to all active users, gives fewer than 14,000 subscribers.'}
+];
+const HYP_B=[
+{tier:2},
+{tier:2},
+{tier:3},
+{tier:3},
+{tier:1},
+{tier:3},
+{tier:1},
+{tier:1},
+{tier:3},
+{tier:3}
+];
+const EX_B=[
+{s:'Business accounts',lvl:'new contracts',
+ idea:'A paid plan on top of Joint Accounts, once they ship, with a log and export first and limits and roles after.',
+ need:'440–1,700 paying companies, at prices from €189 down to $49 a month.',
+ comp:'Safe Pro starts at €189 a month. Squads Pro costs $49 a month and Casa Business $2,750 a year.',
+ rev:'Each company pays a monthly fee per organization and nothing per transaction. $1M a year takes 440 companies at Safe Pro\'s €189 a month or 1,700 at Squads Pro\'s $49, with the euro taken at par with the dollar. Corporate payment cards would be a separate program with the issuer and are not counted.',
+ proof:'Safe had more than $10M of annual revenue at the end of 2025 and still ran at a loss (Safe Foundation, 3 February 2026). Safe Pro starts at €189 a month, Squads Pro costs $49 a month and Casa Business $2,750 a year. For scale, Ledger Enterprise worked with several hundred companies and Fireblocks claimed more than 1,500 customers (The Big Whale, February 2024).',
+ has:'Joint Accounts on Safe, for 2–5 members on 7 EVM networks, is on the public roadmap for the third quarter of 2026. On 10 November 2026 the open-source code still kept it behind a feature flag. Only the paid plan is new.',
+ risks:['Limits, allowlists and roles are separate Safe contracts, and each needs its own audit.',
+  'Ledger was criticized for a per-transaction fee on its Ethereum multisig (The Block, 24 October 2025), so the plan is a flat fee.',
+  'The plan is EVM only, because on Bitcoin the SDK has no multisig with a shared-custody threshold.'],
+ test:'After Joint Accounts ships, open a waitlist for 90 days. Stop if fewer than 50 companies with a treasury of $100,000 or more sign up, or fewer than 20 prepay. Twenty companies are 1–5% of what $1M a year takes, so this test shows direction, not scale.'},
+{s:'Paid network integrations',lvl:'app',
+ idea:'Add new networks under a contract that pays for the integration, annual support and a slot in Earn.',
+ need:'Not sized. The one confirmed payment to a hardware wallet is $300K from Zcash to Ledger.',
+ comp:'Some foundations pay for integrations. Polkadot gave Brave Wallet 3 million USDC over three years.',
+ rev:'Payments from network foundations, one-off for the integration and yearly for support. They could not be sized, and the one payment to a hardware wallet we confirmed is $300K from the Zcash foundation to Ledger. Tangem\'s price for a network that needs no new curves would be lower (assumed).',
+ proof:'Some foundations pay for integrations. The Zcash foundation approved $300K for Ledger in December 2025, for a new device app and new curves, and Ledger intends to apply again every year. In 2023 the Polkadot treasury gave an outside developer 175,000 DOT for a year of support for the Ledger apps, and gave Brave Wallet 3 million USDC over three years. It can go the other way. Phantom dropped Monad in August 2026 and Sui a month later.',
+ has:'Tangem adds networks all the time and has most of the pieces, including co-brands with Kaspa and Tron, Merkl incentives, the Featured assets block and Yield Mode on Monad. It lacks one set of commercial terms and a rule for dropping a network.',
+ risks:['Tangem supports the network for years after the foundation\'s budget has run out.',
+  'A weak network is a reputational risk, as when the company behind Kadena closed in 2025 and Blast announced a wind-down in October 2026.',
+  'The rule of no new curves shortens the list of networks that can sign.'],
+ test:'Send a commercial proposal to five networks from the integration queue and give them 60 days. Stop if none signs a contract with a cash payment at or above the cost of the integration. A network that agrees only to an incentive campaign does not count.'},
+{s:'Inheritance',
+ why3:'Only Tangem\'s server enforces the delay, and Bitkey offers inheritance free.',
+ back:'If the chain itself can enforce the delay, through a Safe module or a Bitcoin timelock.'},
+{s:'Gold holder rights',
+ why3:'Nearly all of it is already on Tangem\'s metals page, and the rest is a text change on the buy screen.',
+ back:'If issuers start paying for distribution.'},
+{s:'Crypto-backed loan',lvl:'new integration',
+ idea:'Borrow USDC or USDT against ETH and wrapped BTC inside the app, from a lending protocol such as Aave or Morpho, with the card signing the loan.',
+ need:'$100M of loans outstanding at a 1% yearly fee (assumed). No wallet publishes its fee.',
+ comp:'6 of 22 have loans built in, through Aave, Morpho or Kamino. None publishes what it earns.',
+ rev:'The borrower pays interest to the protocol. Tangem can add a fee on top or take a share from the protocol, and we found no published terms for wallets. $1M a year takes $100M of loans outstanding at a 1% yearly fee (assumed). Rabby charges nothing on its Aave loans, so any fee sits next to a free alternative.',
+ proof:'Six of the 22 competitors have loans built in. Ledger launched Crypto Loan on 7 October 2026 and lends USDC and USDT against wBTC and cbBTC on Morpho, through Yield.xyz. OneKey, OKX Wallet and Rabby use Aave, Phantom uses Kamino, and Binance Wallet does not name its protocols. None publishes what it earns. The one public figure comes from outside the 22: ether.fi Cash took $0.66M of loan interest in the 12 months to 31 October 2026.',
+ has:'Tangem has no borrowing. Yield Mode already supplies stablecoins to Aave on 8 networks, so an Aave integration and card signing for it exist. BTC on the Bitcoin network cannot be collateral until it is wrapped.',
+ risks:['A price drop liquidates the collateral, so the app needs alerts and a low loan limit, and users will still blame Tangem.',
+  'BTC has to be wrapped into wBTC or cbBTC first, which adds a custodian and a swap before the loan.',
+  'Offering loans to consumers may fall under credit rules even when a protocol lends, so each country needs a legal review.'],
+ test:['Count Tangem addresses that already borrow on Aave or Morpho over WalletConnect, and the ETH and wrapped BTC held on EVM networks. Stop if the possible debt is below a threshold Tangem sets.',
+  'Show holders of ETH and wrapped BTC a borrowing screen with the real rate and a waitlist for 30 days. Stop if the loans people sign up for, at a 50% loan limit, come to less than $100M.']},
+{s:'Fixed yield through Pendle',
+ why3:'Pendle\'s fees fell 89% in a year and the pools are thin.',
+ back:'If liquidity grows and a partner share appears.'},
+{s:'BTC yield',lvl:'new integration',
+ idea:'A BTC yield section that starts with Lombard LBTC, shows the measured rate and takes a share of the yield, as Yield Mode does for stablecoins.',
+ need:'$800M of BTC at a 15% share of today\'s 0.83%, or $270M at the 2.5% Ledger targets.',
+ comp:'5 of 22 have BTC yield built in, three of them through Lombard. None publishes its share.',
+ rev:'Tangem takes a share of the yield, as it takes 15% in Yield Mode. LBTC paid 0.83% a year on the 30-day average to 13 November 2026, and WBTC and cbBTC on Aave pay about 0%. $1M a year takes about $800M of BTC at 0.83%, or about $270M at the 2.5% a year that Ledger targets. At today\'s measured rate this keeps BTC holders in the app more than it adds revenue.',
+ proof:'Five of the 22 competitors have BTC yield built in. Ledger has offered Lombard LBTC through Figment since 14 January 2026 and targets 2.5% a year or more from a strategy managed by Bitwise, which is a target and not a measured rate. CoolWallet also uses LBTC, OneKey uses Babylon, OKX Wallet supplies cbBTC to Aave, and Binance Wallet offers liquid staking through Lombard and three other protocols, paid partly in points. None publishes its share.',
+ has:'BTC earns nothing in Tangem today. Lombard accepts a deposit from a SegWit address, so LBTC needs no new card work. Native Babylon staking needs Taproot scripts that the SDK cannot build yet.',
+ risks:['At 0–1% a year a 15% share is very small, so revenue depends on a rate Tangem does not control.',
+  'LBTC is a wrapper, so the BTC leaves the owner\'s address and a consortium confirms minting and redemption.',
+  'Rates above 1% come from managed strategies, as at Ledger and CoolWallet, and a strategy can lose money.'],
+ test:'Show BTC holders a yield screen with the measured rate and a sign-up for 30 days. Stop if the BTC that signs up, at a 15% share of that rate, earns less than the integration costs. A higher-rate strategy is a separate, later test.'},
+{s:'Options to protect a portfolio',lvl:'new integration',
+ idea:'A Protect button on a BTC or ETH position that buys a put option for 1–3 months through Derive and shows the premium and the price floor.',
+ need:'$83K of fees a month. All of Derive, the largest venue, earned $0.46M in October 2026.',
+ comp:'We found no wallet among the 22 with options. Derive\'s revenue grew 2.4 times in a year.',
+ rev:'The user pays the option premium and the venue\'s fee. Derive\'s broker program returns 10–50% of the net fee to the app that brings the trade, and the top rate starts at $100M of volume over 28 days. $1M a year is $83K a month, about 18% of the $0.46M that all of Derive, perps included, earned in October 2026. A markup on the premium is the other way to earn, and it makes the protection dearer.',
+ proof:'We found no wallet among the 22 with options built in, so there is no competitor revenue to compare. Derive is the largest on-chain options venue. Its revenue across all products was $0.46M in October 2026 against $0.19M a year earlier, about 2.4 times. Options fees across all on-chain venues are about $0.5M a month. The Ribbon and Friktion option vaults have shut down.',
+ has:'Tangem has no options and no venue integration. Card EIP-712 signing works, and if perps (01) ships, its trading key on the phone and its deposit flow can be reused.',
+ risks:['On-chain liquidity is thin, and by Derive\'s own account a hedge there costs roughly 40% more than on Deribit.',
+  'A put that expires unused looks like money lost, so the screen has to say plainly what the premium buys.',
+  'Options are derivatives, so the country limits and legal review that apply to perps apply here too.'],
+ test:['Before any build, 2 weeks. Show holders of $10,000 or more in BTC or ETH a Protect screen with a real premium quote from Derive and a waitlist. Stop if fewer people join than a threshold Tangem sets.',
+  'A 60-day beta through Derive for people from the waitlist. Stop if the fees Tangem would receive, scaled to all eligible holders, are below $83K a month.']},
+{s:'Recurring buys',
+ why3:'Jupiter\'s recurring orders on Solana pay the wallet nothing, and EVM needs a new contract because the card signs only on a tap.',
+ back:'If more than 3% of buyers press a "Buy regularly" placeholder.'},
+{s:'Launchpad',
+ why3:'The one example runs on exchange incentives, and its rewards go to airdrop hunters.',
+ back:'If a launchpad appears that runs without exchange incentives.'}
+];
+const HYP=HYP_A.concat(HYP_B);
+/* What each hypothesis consists of (EL, in hypothesis order 01 to 20): "Consists of" on first-wave cards and "What Tangem builds" on every sheet. Deferred hypotheses have no sheet and an empty entry. */
+const EL=[
+ /* 01 Perps on Hyperliquid */
+ ["A Perps section on a separate card address",
+  "A trading key on the phone that the card can revoke",
+  "Card-signed deposits, withdrawals and a cap on Tangem's fee",
+  "Integration with HyperCore, the Hyperliquid layer where perps trade"],
+ /* 02 Cheap USDT transfers on TRON */
+ ["An Energy rental provider behind the existing relayer",
+  "Energy delegated to the user's address for two transactions",
+  "A user price at least 30% below burning TRX",
+  "A TRX float or a deposit with the provider"],
+ /* 03 Tangem validator on a second network */
+ ["The fee gain on Solana, worked out from internal data",
+  "A rule for choosing the second network by stake",
+  "Tangem's validator on that network, listed first",
+  "The servers and an on-call rota to run it"],
+ /* 04 deferred */
+ [],
+ /* 05 deferred */
+ [],
+ /* 06 Second yield protocol */
+ ["A new Yield module version with Aave and a Morpho vault",
+  "An audit of the new contract version",
+  "A card tap from each user to upgrade their contract",
+  "A public limit per protocol, shown in the app"],
+ /* 07 deferred */
+ [],
+ /* 08 Co-brand with a revenue share */
+ ["A partner share of swap and yield fees, 20–30%",
+  "Attribution by batch number",
+  "The partner's token and staking on the first screen",
+  "A batch-level report without addresses or individual transactions"],
+ /* 09 Tangem Pay in Europe */
+ ["A personal IBAN with SEPA",
+  "A stablecoin authorized under MiCA, the EU crypto law",
+  "A paid plan with no cashback",
+  "A waitlist with a refundable prepayment"],
+ /* 10 Paid membership */
+ ["Reimbursement up to a limit on transactions marked safe",
+  "Priority support",
+  "A tax export through a partner",
+  "A payout reserve, run as Tangem's own program"],
+ /* 11 Business accounts */
+ ["Joint Accounts itself, which today sits behind a feature flag",
+  "Up to 5 signers on separate card sets",
+  "An activity log and export for accounting",
+  "Limits, allowlists and roles as audited Safe modules"],
+ /* 12 Paid network integrations */
+ ["One price list for integration and annual support",
+  "A paid slot in Featured assets on the Earn tab",
+  "Only networks that use curves already on the cards",
+  "A stated rule for dropping a network"],
+ /* 13 deferred */
+ [],
+ /* 14 deferred */
+ [],
+ /* 15 Crypto-backed loan */
+ ["A Borrow section for ETH and wrapped BTC collateral",
+  "Loans in USDC and USDT from Aave or Morpho",
+  "Card-signed borrowing, repayment and collateral top-up",
+  "Alerts before a liquidation and a low loan limit"],
+ /* 16 deferred */
+ [],
+ /* 17 BTC yield */
+ ["A BTC yield section with the measured rate of each option",
+  "Lombard LBTC deposits from the user's SegWit address",
+  "A share of the yield for Tangem",
+  "Babylon staking later, once the SDK builds Taproot scripts"],
+ /* 18 Options to protect a portfolio */
+ ["A Protect button on BTC and ETH positions",
+  "Put options for 1–3 months bought through Derive",
+  "The premium and the price floor shown before the tap",
+  "A payout to the wallet if the price ends below the floor"],
+ /* 19 deferred */
+ [],
+ /* 20 deferred */
+ []
+];
+const RF=[["swaps", "Swaps and bridges"], ["perps", "Perps"], ["fiat", "Buying for fiat"], ["staking", "Staking"], ["yield", "Yield"], ["card", "Card and payments"], ["pred", "Prediction markets"], ["subs", "Subscriptions"], ["devices", "Device sales"], ["other", "Other"]];
+const REV=[{"w":"Tangem","t":"hw","f":{"swaps":[182819,1403540,"c","The fee that LI.FI's public integrator data credits to Tangem on swaps and bridges routed through LI.FI, on $15.5M of volume in October 2026. LI.FI is one of Tangem's 10 providers, so the line is a floor. About a quarter of that volume, mostly stablecoin pairs, carried no fee for Tangem, and on the rest the fee credited to Tangem was 1.25–2.2% after LI.FI's own cut, by our reading of the fee line.","","ge"],"fiat":"Buying runs through Mercuryo, MoonPay, Simplex and Unlimit and selling through MoonPay only. Tangem publishes no volume and no share for either.","staking":[26208,195792,"c","Only the 5% commission on inflation rewards at Tangem's own Solana validator, which holds about 1.24 million SOL. It's before running costs, and the series starts in December 2025, so the 12-month figure covers 11 months, about 2,100 SOL. At today's stake and SOL price that is a rate of about $0.25M a year. It leaves out the other 7 staking assets and the validator's Jito tips, which Jito's public data puts at about $37K in October 2026 with the validator set to keep all of them. Whether Tangem passes tips back to stakers isn't public.","*","ge"],"yield":[41089,177668,"c","The 15% service fee that reached Tangem's Yield Mode fee address on Ethereum and Avalanche, counting only receipts that carry no network-fee refund. Receipts at deposit time and the six smaller networks are left out, so the real figure is higher. Our own rough estimate for October 2026 is $55K to $60K, and Tangem has the exact number. The first fees arrived in November 2025.","","ge"],"card":"Tangem Pay, a Visa card, with a Plus plan at $29.99 a month. No spend or revenue is published, though Tangem told Cointelegraph (7 October 2026) that more than 40% of payments come from Latin America and over 30% from the US. The same article says the initial release is limited to 5,000 cards.","pred":[25,41,"c","Builder fees on Polymarket trades placed through Tangem, at 2.5% of the amount traded. The first trade was on 29 July 2026, so the 12-month figure covers three months, and in October 2026, 12 wallets traded $989.","*"],"devices":"The split between devices and in-app services is not published.","other":"Co-brand and reseller sales belong here, and nothing is published about them."},"me":1,"tot":[null,61300000,"s","Calendar 2025, as Tangem told The Block (18 March 2026), up 102% on 2024, with monthly active users of in-app services up 50%. Tangem said growth was driven less by one-off device sales and more by recurring engagement. It has published no split by feature and no 2026 figure, and the few lines with a figure in this row are our own on-chain measurements.","*"]},{"w":"Ledger","t":"hw","f":{"swaps":"","perps":"Hyperliquid through Yield.xyz since May 2026, fee undisclosed. No on-chain series exists for it.","fiat":"","staking":"Two Solana validators carry Ledger's name, one run by Figment with 9.24 million SOL and one by Bitwise with 0.62 million SOL, both at a 7% commission. The commission goes to the operator, and Ledger's share isn't public.","yield":"","card":"","subs":"Ledger Recover at $99.99 a year. The number of subscribers has never been disclosed.","devices":"More than 8 million devices sold in total. Device revenue is not published.","other":"Ledger doesn't split services by feature. In March 2023 the CEO put hardware and services at about 80/20 (CFNews). We've seen it said that the app now brings in about half of revenue, but we couldn't find where that comes from."},"tot":[null,112700000,"p","A floor. The Block (20 March 2026) reports \"triple-digit million-euro revenue in 2025\", so we take EUR 100M at the 2025 average rate, and the real figure could be several times that. The CEO's original remark to the FT in November 2025 named no currency and several outlets read it as dollars, which would put the floor at $100M. Ledger has published no figure and no split by feature.","*","ge"]},{"w":"Trezor","t":"hw","f":{"swaps":"Inside the services figure in the Other column.","fiat":"Inside the services figure in the Other column.","staking":"Inside the services figure in the Other column. The CEO calls staking \"definitely big\".","yield":"","devices":[null,31900000,"e","Our estimate, which takes about 70% of at least CZK 1bn, so roughly $32M or more. The split is the CEO's \"around 70/30\" for hardware and software (DL News, October 2025).","*","ge"],"other":[null,13700000,"e","All services together (swaps, buying, DCA, staking), not split by feature. We estimate it at about 30% of at least CZK 1bn, roughly $14M or more. By August 2026 the CEO put services at about half of revenue (cc.cz).","*","ge"]},"tot":[null,45600000,"s","A floor. The CFO told e15.cz (13 March 2026) that 2025 revenue passed CZK 1bn, which is $45.6M at the 2025 average rate. The CEO called 2025 the second-best year after 2021 (CZK 1.4bn), so the ceiling is about $64M, and management expects 2026 to be lower.","*","ge"]},{"w":"SafePal","t":"hw","f":{"swaps":[9123,111360,"c","We can measure only the LI.FI route, where SafePal collects 0.3% and handled $3.3M of volume in October 2026. Volume on its own aggregator, which charges 0.2% per order, isn't published.","","ge"],"perps":"Hyperliquid, with SafePal adding 0.05% of its own. SafePal doesn't report the revenue and no on-chain series exists for it.","fiat":"","staking":"","yield":"","card":"Card spend was $0.30M in October 2026 and $25.8M over the 12 months to October (Paymentscan, on-chain spends on Arbitrum). Monthly spend peaked at $3.35M in January 2026 and has fallen 91% since, most of it in August 2026. SafePal's share of the 1% conversion fee isn't published.","pred":[1016,4599,"c","Builder fees on Polymarket trades placed through SafePal, at 0.5% of the amount traded. SafePal has charged the fee since 12 May 2026, so the 12-month figure covers under six months. In October 2026, 188 wallets traded $0.20M.","*"],"devices":"SafePal publishes no unit or revenue figure. The only hint of scale is its security notice of 16 August 2026, which says order data of about 39,798 customers who ordered between 2 March 2025 and 11 April 2026 was exposed. The notice doesn't say this is every customer in that period.","other":""},"tot":[10139,115959,"c","Only the LI.FI swap route and Polymarket builder fees can be measured, so this is a small part of what SafePal earns.",""]},{"w":"OneKey","t":"hw","f":{"swaps":[20714,164147,"c","A floor. It counts only the fee OneKey collects on swaps and bridges routed through LI.FI, 0.85% on most transfers, on $4.0M of volume in October 2026. Its other swap routes can't be measured.","","ge"],"perps":[216623,1305030,"c","Hyperliquid builder fees, all kept by OneKey. October 2026 is the record month, helped by a fee rise from 0.05% to 0.08% on 12 October. The series reads zero from 21 February to 5 April 2026, so the 12-month figure is probably low, and referral rewards of $0.18M since October 2025 aren't counted.","*"],"fiat":"","staking":"","yield":"","devices":""},"tot":[237337,1469177,"c","The total adds builder fees on perps and the LI.FI swap route, so it's a lower bound. The founder said on 31 December 2025 that OneKey turned profitable in 2024 and grew revenue 41.6% in 2025, without giving the amount.","*"]},{"w":"Keystone","t":"hw","f":{"swaps":"","devices":"","other":""}},{"w":"CoolWallet","t":"hw","f":{"swaps":"","staking":"","yield":"","card":"","subs":"","devices":"","other":""}},{"w":"BitBox","t":"hw","f":{"swaps":"","fiat":"","card":"","devices":"","other":""}},{"w":"ELLIPAL","t":"hw","f":{"swaps":"","fiat":"","staking":"","card":"","devices":"ELLIPAL publishes no revenue or unit figure. Its own site claims more than 1 million users in over 140 countries.","other":""}},{"w":"SecuX","t":"hw","f":{"swaps":"","fiat":"","staking":"","card":"","devices":"","other":""}},{"w":"GridPlus","t":"hw","f":{"devices":""}},{"w":"MetaMask","t":"sw","f":{"swaps":[1404539,31312192,"c","The fee MetaMask collects on swaps and bridges (0.875%). October 2025 was $6.79M. MetaMask changed the addresses that collect the fee on 30 September 2026, so October 2026 may be undercounted.",""],"perps":[2003820,12483693,"c","Hyperliquid builder fees (0.10%), live since 8 October 2025. October 2026 is the record month. The line leaves out Hyperliquid referral rewards, which come to $1.3M to date, about 9% on top of builder fees.",""],"fiat":"","staking":"Pooled ETH staking for a share of rewards. The amount is not published.","yield":[50344,830714,"c","Yield on the reserves behind mUSD, before anything MetaMask passes on to holders or the issuer. It peaked at $210K in October 2025.",""],"card":"Card spend was $3.38M in October 2026 and $56.5M over 12 months (Paymentscan). MetaMask's share of it isn't published.","pred":[146739,1054034,"c","Polymarket builder fees came to $0.20M in October 2026, and MetaMask keeps 75% of them, with 25% going to the market provider. It's been live since 16 May 2026, so the 12-month figure covers 5.5 months.","*"],"subs":"Transaction Shield at $9.99 a month. No subscriber count is published.","other":""},"tot":[3605442,45680633,"c","The sum of the four lines measured on-chain. It leaves out fiat, staking, the card and Transaction Shield, which MetaMask doesn't report.",""]},{"w":"Phantom","t":"sw","f":{"swaps":[4989576,85345670,"c","The fee Phantom collects on swaps and bridges (0.85%). October 2025 was $14.2M and the peak was $115M in January 2025.",""],"perps":[1406446,18562493,"c","Hyperliquid builder fees (0.05%), live since July 2025. The peak was $2.84M in August 2025. Hyperliquid referral rewards, $2.5M since June 2025, would add about 9% and aren't counted.",""],"fiat":"","staking":[13099,213527,"c","What Phantom's liquid-staking pool (PSOL) keeps, plus the 4% commission its Solana validator earns on inflation rewards. In October 2026 the pool kept $6K and the validator earned $7K. Validator tips and block rewards aren't counted.",""],"yield":"The CASH stablecoin has a supply of $131M. Phantom's share of the reserve yield isn't published.","card":"Phantom Cash card spend was $1.07M in October 2026 and $7.8M over 12 months (Paymentscan). Phantom's share of it isn't published.","pred":"Kalshi markets at $0.01 per contract. No volume or revenue is disclosed.","other":""},"tot":[6409121,104121690,"c","The sum of the lines measured on-chain. Forbes reports $320M for calendar 2025 and the same on-chain series add up to $326M for that year, so the on-chain lines capture nearly all of Phantom's revenue. The last 12 months come to about a third of the 2025 figure.",""]},{"w":"Trust Wallet","t":"sw","f":{"swaps":[506394,4636114,"c","Swap and bridge fees reaching Trust Wallet's fee wallets on 7 EVM chains, no Solana. October 2026 is a few percent too high, because the series deducts the share passed to SwapKit only from November 2026 on.",""],"perps":[1601244,4173734,"c","Hyperliquid builder fees (0.10% since 8 October 2026). Volume was close to zero before July 2026, so the 12-month figure is about four months of revenue. Hyperliquid's own lifetime count runs about 9% above this series, and referral rewards of $0.48M since late April 2026 aren't counted.","*"],"fiat":"","staking":[37397,403271,"c","The 10% commission that Trust Nodes, Trust Wallet's own Solana validator, earns on inflation rewards. It's before running costs and leaves out tips, block rewards and every other chain.","","ge"],"yield":"Stablecoin Earn held more than $155M in December 2025. Trust Wallet's share isn't published.","pred":"","other":""},"tot":[2145035,9213119,"c","The sum of the lines measured on-chain, a lower bound. Trust Wallet publishes no dollar revenue.",""]},{"w":"OKX Wallet","t":"sw","f":{"swaps":"DefiLlama has separated OKX's own swap revenue only since 5 November 2026, and it came to $0.66M from 5 to 12 November. There's no October or 12-month figure.","staking":"","yield":"","card":"","other":""}},{"w":"Exodus","t":"sw","f":{"swaps":[6263000,84119000,"f","\"Exchange aggregation\" in the 10-Q, down 30% in Q3 on a year earlier. The month is the Q3 2026 average and the 12 months run to 30 September. October 2026 swap volume was $372.1M, 2% above the Q3 monthly average, which implies about $6.4M at the Q3 rate of 1.72%.","*"],"fiat":[769333,7899000,"f","\"Fiat onboarding and offboarding\" in the 10-Q, so it covers buying and selling, and it was up 75% in Q3 on a year earlier. The month is the Q3 2026 average and the 12 months run to 30 September.","*"],"staking":[171667,2460000,"f","\"Staking\" in the 10-Q, down 72% in Q3 on a year earlier. It excludes yield on Exodus's own treasury. The month is the Q3 2026 average.","*"],"card":[3634667,15892000,"f","Payment processing at Monavate and Baanx, which is mostly card issuing for other companies. Exodus bought them on 1 May 2026, so the 12-month column covers five months. Net interchange on purchases was $0.77M in Q3. October 2026 payments volume was $373.9M, up 5% on September, with 760,600 cards active.","*"],"other":[7667,529000,"f","Consulting, NFT and other small lines in the 10-Q.","*"]},"tot":[10846333,110899000,"f","Total revenue in the 10-Q filed on 9 November 2026: $32.5M in Q3 2026. Calendar 2025 was $121.6M. The 12 months run to 30 September.","*"]},{"w":"Coinbase Wallet","t":"sw","f":{"swaps":[1869701,9834145,"c","Fees Coinbase collects on trades, swaps and bridges in the wallet, which was called the Base app until September 2026, at up to 1% per swap. The series reads zero from 19 October 2025 to 1 January 2026, so the 12-month figure covers 10 months and is a floor.","*"],"perps":"Hyperliquid since 19 August 2026. Coinbase hasn't published its fee and no on-chain series tracks it.","fiat":"Through a Coinbase account or third parties. Any fee lands in Coinbase's consumer revenue and isn't split out.","yield":"USDC Rewards of up to 3.35% a year, which Coinbase pays out of its stablecoin revenue. The wallet's share isn't broken out.","pred":[2495,2664,"c","Builder fees under the builder code Polymarket lists as Coinbase Wallet, at 1% of the amount traded. The fee started on 12 September 2026, so the 12-month figure covers under two months. In October 2026, 456 wallets traded $0.25M.","*"]},"tot":[1872196,9836809,"c","The total adds 10 months of swap fees and under two months of Polymarket builder fees, so it's a lower bound.","*"]},{"w":"Binance Wallet","t":"sw","f":{"swaps":[1010946,16046795,"c","Fees collected by the Binance Wallet router on 12 EVM chains, no Solana. DefiLlama files it under Binance Alpha trading, so it's an upper bound for the wallet. The peak was $5.66M in October 2025.",""],"perps":"Aster on BNB Chain since January 2026. The wallet's fee isn't published.","fiat":"Buy with Card runs through Binance Pay Onchain and a verified Binance account. Binance lists no fee amounts and publishes no volume for the wallet.","staking":"","yield":"","pred":[0,0,"s","Binance says the trading fees on Predict.fun are the vendor's and that it collects none, and the wallet pays the gas. So this line is zero by Binance's own account.","*"],"other":""},"tot":[1010946,16046795,"c","This is the swap line alone, which is an upper bound for that line, and nothing else is measured.",""]},{"w":"Bitget Wallet","t":"sw","f":{"swaps":[2700000,null,"e","Our estimate, and a weak one. Bitget Wallet reported about $900M a month in swap volume for 2025 and publishes a fee of 0–0.5% on same-chain swaps and 0.3–1.3% cross-chain. We show 0.3% of that volume, and at 0.1–0.5% it would be $0.9M to $4.5M a month. Nothing is measured on-chain.","*"],"perps":[82963,null,"c","Hyperliquid builder fees. DefiLlama has data from 7 October 2026 only, so the month covers 25 days and there's no 12-month figure. Hyperliquid's own lifetime count is $0.56M of builder fees to 13 November 2026, of which DefiLlama's series holds $0.15M, plus $0.08M of referral rewards.","*"],"fiat":"","staking":"Bitget's staked-SOL pool, which belongs to the exchange group and not to the wallet, kept $15K over 12 months. Nothing else is published.","yield":"","card":"Card spend was $31M to $33M in the first half of 2026 (the company's release says $31M and its COO's letter more than $33M), and CertiK puts some months at about $7M. Net revenue isn't published.","pred":[30491,168249,"c","Bitget Wallet's builder fee on Polymarket trades, 1% of the amount traded, charged since 18 May 2026, so the 12-month figure covers under six months. Whether Bitget Wallet passes a share to a partner isn't public.","*"],"other":""},"tot":[2813454,null,"e","Mostly our swap estimate, plus 25 days of perps and Polymarket builder fees. There's no 12-month total, because only prediction markets have a 12-month figure.","*"]},{"w":"Rabby","t":"sw","f":{"swaps":[174080,1607761,"c","Swap and bridge fees (0.25%) on 21 EVM chains. Calendar 2025 was $9.05M. The series is near zero from October to December 2025, and we couldn't find out why.",""],"perps":[514353,2516521,"c","Hyperliquid builder fees (0.02–0.04%), up from $54K in October 2025 to a record $514K, three times what swaps earn. Rabby also collects Hyperliquid referral rewards, $2.85M since September 2025 against $3.07M of builder fees over the same period, and they aren't counted here.",""],"yield":"The Aave lending screen on mobile, which the app describes as zero fees, and savings vaults in the extension. Rabby states no fee of its own on either."},"tot":[688433,4124282,"c","The sum of swap fees and Hyperliquid builder fees. It leaves out Hyperliquid referral rewards ($2.85M since September 2025). DeBank, the parent company, publishes nothing.",""]},{"w":"Backpack","t":"sw","f":{"swaps":"Backpack's pages give the wallet fee as 0.85% falling to 0% by tier, and elsewhere as zero. No volume is published.","perps":"Perps are on Backpack Exchange, reached from the same app. Its revenue isn't published.","fiat":"","staking":"The staked-SOL pool of the Backpack group, which also runs the exchange, kept $4K over 12 months. Nothing else is published.","yield":"","pred":"Prediction markets sit on Backpack Exchange, reached from the same app, and were still an invite-only beta in July 2026. No revenue is published.","other":""}},{"w":"Uniswap Wallet","t":"sw","f":{"swaps":[0,null,"c","Uniswap Labs' interface fee across all its front ends, so an upper bound for the wallet. It ran at about $4.5M a month until October 2025 and brought $5.3M in the 12 months to October 2026, nearly all of it before Uniswap Labs stopped charging on 27 December 2025. October 2026 is zero.","*"],"fiat":"","yield":[0,0,"s","Earn, live since 30 July 2026, puts USDC, USDT and ETH into Morpho vaults. Uniswap says it charges no fee on it.","*"],"other":""},"tot":[0,null,"c","October 2026 is zero. There's no 12-month total, because Uniswap Labs' interface fee, $5.3M across all its front ends in these 12 months, ended on 27 December 2025 and can't be split out for the wallet.",""]},{"w":"Robinhood Wallet","t":"sw","f":{"swaps":"Robinhood takes 0.80% on same-chain swaps and 0.73% cross-chain. No volume or revenue is published.","perps":"Lighter on Robinhood Chain. Robinhood publishes no fee. Lighter itself made $2.2M on Robinhood Chain in October 2026.","fiat":"","other":"Robinhood Chain, which the wallet runs on, brought Robinhood $26M of revenue in Q3 2026, its first quarter on mainnet (The Block, 27 October 2026). That figure is for the chain, and the wallet isn't broken out."}}];
+
+/* ================= helpers ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const h=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const f2=(n,d=2)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).replace('-','−');
+const pad=i=>String(i+1).padStart(2,'0');
+const np=t=>String(t).replace(/\.$/,'');
+const tip=$('#tip');
+function bindTip(node,text){
+  const show=(x,y)=>{tip.hidden=false;tip.textContent=text;const w=tip.offsetWidth,hh=tip.offsetHeight;let l=x+14;if(l+w>innerWidth-8)l=x-w-14;tip.style.left=Math.max(8,l)+'px';tip.style.top=Math.min(innerHeight-hh-8,y+16)+'px'};
+  node.addEventListener('pointermove',e=>show(e.clientX,e.clientY));
+  node.addEventListener('pointerleave',()=>{tip.hidden=true});
+  node.addEventListener('focus',()=>{if(!node.matches(':focus-visible'))return;const r=node.getBoundingClientRect();show(r.left,r.bottom-12)});
+  node.addEventListener('blur',()=>{tip.hidden=true});
+}
+addEventListener('scroll',()=>{tip.hidden=true},{passive:true});
+
+/* ================= hypotheses: fields, waves, sheets ================= */
+const EX=EX_A.concat(EX_B);
+HYP.forEach((x,i)=>Object.assign(x,EX[i]));
+const WORD=['zero','one','two','three','four','five','six','seven','eight','nine','ten'],word=n=>WORD[n]||String(n);
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+const lc=t=>/^[A-Z][a-z]/.test(t)?t.charAt(0).toLowerCase()+t.slice(1):t;
+const list=a=>a.length>1?a.slice(0,-1).join(', ')+' and '+a[a.length-1]:a.join('');
+const cnt=t=>HYP.filter(x=>x.tier===t).length;
+/* only the first and the next wave have a sheet; the order is the order of the cards */
+const SHEETS=[1,2].flatMap(t=>HYP.map((x,i)=>x.tier===t?i:-1).filter(i=>i>=0));
+const ref=i=>SHEETS.includes(i)
+  ?`<button type="button" class="ref t${HYP[i].tier}" data-h="${i}" aria-label="Hypothesis ${i+1}: ${esc(HYP[i].s||'')}">${pad(i)}</button>`
+  :`<span class="ref t3">${pad(i)}</span>`;
+const effort=x=>x.lvl?`Effort: ${lc(String(x.lvl))}`:'';
+const para=t=>t?`<p>${t}</p>`:'';
+const bullets=a=>Array.isArray(a)&&a.length?`<ul class="els">${a.map(e=>`<li>${e}</li>`).join('')}</ul>`:'';
+const EL_=typeof EL!=='undefined'&&Array.isArray(EL)?EL:[];
+
+/* ================= sheet parts: the money flow and the small charts ================= */
+const ARR='<svg viewBox="0 0 18 10" aria-hidden="true"><path d="M1 5h15M12 1l4 4-4 4"/></svg>';
+const flow=nodes=>`<div class="flow">${nodes.map((n,k)=>(k?`<div class="farr">${ARR}</div>`:'')+`<div class="fnode ${n.c||''}"><em>${n.k}</em><b>${n.t}</b></div>`).join('')}</div>`;
+/* who pays, who does the work, what Tangem gets: one row per hypothesis that has a sheet, keyed by its index (hypothesis number minus one).
+   "Tangem gets" is also the "Earns" line on the card. The pays / work / earns fields of a hypothesis, when set, replace its row here. */
+const FLOW={
+ 0:['The trader, on every trade','Hyperliquid','A builder fee, the fee Hyperliquid lets an app add to each trade, 0.05–0.08% of volume.'],
+ 1:['The sender, in USDT','Tangem\'s relayer, with rented Energy','A margin on each payment, about $0.06 at today\'s public Energy price.'],
+ 2:['The staker, out of rewards','Tangem\'s own validator','The validator fee, 5–10% of rewards, in place of the provider\'s share.'],
+ 5:['The Yield Mode user','Aave and a Morpho vault','15% of the yield, as now.'],
+ 7:['The partner pays wholesale and card holders pay in-app fees','Tangem makes the cards, the partner sells them','Device and fee revenue from the batch, less 20–30% to the partner.'],
+ 8:['The user, a plan fee plus conversion','A licensed card issuer','The plan fee and conversion at top-up.'],
+ 9:['The user, about $10 a month','Tangem, with Blockaid and a tax partner','The subscription, less payouts and the app stores\' 15–30%.'],
+ 10:['The company, a monthly fee','Safe contracts and a relayer','The subscription.'],
+ 11:['The network\'s foundation','Tangem','A one-off payment for the integration, then a yearly fee for support and the Earn slot.'],
+ 14:['The borrower, as interest','Aave or Morpho','A fee on top of the interest or a share from the protocol. Neither is set yet.'],
+ 16:['The BTC holder, out of the yield','Lombard, and Babylon later','A share of the yield, 15% as in Yield Mode (assumed).'],
+ 17:['The holder, an option premium and a fee','Derive','A share of the venue\'s fee, 10–50% under Derive\'s broker program.'],
+};
+
+/* a hypothesis's own pays / work / earns fields win over its row in FLOW */
+const flowOf=i=>{const f=FLOW[i]||[],x=HYP[i]||{};return [x.pays||f[0]||'',x.work||f[1]||'',x.earns||f[2]||'']};
+const earns=i=>flowOf(i)[2];
+const moneyFlow=i=>{const f=flowOf(i);return f.some(Boolean)?flow([{k:'Pays',t:np(f[0])},{k:'Does the work',t:np(f[1])},{k:'Tangem gets',t:np(f[2]),c:'me'}]):''};
+const mrow=(n,s,track,v)=>`<div class="bar-row"><div class="bl">${n}${s?`<small>${s}</small>`:''}</div><div class="bar-track">${track}</div><div class="bv">${v}</div></div>`;
+const fillw=(w,c)=>`<div class="bar-fill ${c||''}" style="width:${w}%"></div>`;
+const seg=(l,w,bg)=>`<span class="bar-seg" style="left:${l}%;width:${w}%;background:${bg}"></span>`;
+const PALE='color-mix(in srgb,var(--accent-fill) 38%,var(--panel))';
+const mini=(title,body)=>`<div class="mini"><h4>${title}</h4>${body}</div>`;
+const dotsN=(n,c)=>`<span class="dots">${Array.from({length:n},()=>`<i${c?` class="${c}"`:''}></i>`).join('')}</span>`;
+/* one small chart per hypothesis where the sheet has a number worth drawing: a title and the bars, no caption */
+const MINI={
+ 16:()=>mini('$1M a year takes about $800M of BTC at today\'s rate and about $270M at Ledger\'s target',
+   mrow('At 0.83%','LBTC, 30-day average',fillw(100),'about $800M')+mrow('At 2.5%','Ledger\'s target',fillw(33.5,'hi'),'about $270M')),
+ 17:()=>mini('$1M a year is about 18% of what all of Derive earned in October 2026',
+   mrow('Derive','all products, a month',fillw(100),'$0.46M')+mrow('Needed','a month',fillw(18,'hi'),'$83K')),
+ 0:()=>mini('About 1% of addresses do 70% of the volume',
+   mrow('Addresses','',fillw(1,'hi'),'about 1%')+mrow('Volume','their share',seg(0,80,PALE)+seg(0,70,'var(--accent-fill)'),'70%')),
+ 1:()=>mini('Renting saves $1.27 a payment. A 30% user discount takes $1.21 of it.',
+   mrow('Burning TRX','today',fillw(100),'$4.03')+mrow('User price','30% below burning',fillw(2.82/4.03*100,'hi'),'$2.82')+mrow('Energy cost','rented',fillw(2.76/4.03*100),'$2.76')),
+ 2:()=>mini('Tangem\'s Solana validator holds about $100M of stake. $1M a year takes about $400M.',
+   mrow('Stake today','about 1.24 million SOL',fillw(25,'hi'),'about $100M')+mrow('Needed','5% yield, 5% commission',seg(0,100,PALE),'about $400M')),
+};
+
+/* ================= drawer ================= */
+let drState=null,drReturn=null;
+const drawer=$('#drawer'),scrim=$('#scrim'),drBody=$('#dr-body');
+const BG=()=>$$('nav,section');
+function drOpen(kind,i,from){
+  if(!SHEETS.includes(i))return;
+  const first=!drState;if(first){drReturn=from||document.activeElement;BG().forEach(e=>e.inert=true)}
+  drState={i};drawer.hidden=false;scrim.hidden=false;
+  drawHyp(i);
+  drBody.scrollTop=0;if(first)$('#dr-close').focus();
+}
+function drClose(){BG().forEach(e=>e.inert=false);drawer.hidden=true;scrim.hidden=true;drState=null;if(drReturn&&drReturn.focus)drReturn.focus()}
+function drStep(d){if(!drState)return;const n=SHEETS.length;drOpen('h',SHEETS[(SHEETS.indexOf(drState.i)+d+n)%n])}
+$('#dr-close').onclick=drClose;scrim.onclick=drClose;$('#dr-prev').onclick=()=>drStep(-1);$('#dr-next').onclick=()=>drStep(1);
+addEventListener('keydown',e=>{if(!drState)return;if(e.key==='Escape')drClose();if(e.key==='ArrowLeft')drStep(-1);if(e.key==='ArrowRight')drStep(1)});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-h]');if(b)drOpen('h',+b.dataset.h,b)});
+/* every sheet: header, money flow, revenue, competitors, what Tangem builds and has, risks, test, mini chart */
+function drawHyp(i){
+  const x=HYP[i];$('#dr-kind').textContent=`Sheet ${SHEETS.indexOf(i)+1} of ${SHEETS.length}`;
+  const part=(t,b)=>b?`<b>${t}</b>${b}`:'';
+  const box=b=>b?`<div>${b}</div>`:'';
+  const steps=Array.isArray(x.test)?x.test.filter(Boolean):x.test?[x.test]:[];
+  const test=steps.length>1?`<ol class="steps">${steps.map(t=>`<li>${t}</li>`).join('')}</ol>`:para(steps[0]);
+  const risks=Array.isArray(x.risks)?x.risks:x.risks?[x.risks]:[];
+  const eff=effort(x);
+  drBody.innerHTML=`<div class="dr-tags"><span class="pill t${x.tier}"><i></i>${TIER[x.tier]}</span>${eff?`<span class="pill">${eff}</span>`:''}</div>
+  <h2 id="dr-title">${pad(i)} · ${x.s||''}</h2>
+  ${moneyFlow(i)}
+  <div class="kf">${box(part('Revenue',para(x.rev)))}${box(part('Competitors',para(x.proof)))}${box(part('What Tangem builds',bullets(EL_[i]))+part('What Tangem already has',para(x.has)))}${box(part('Risks',bullets(risks)))}${box(part('Test and stop rule',test))}</div>
+  ${MINI[i]?MINI[i]():''}`;
+}
+
+/* ================= charts ================= */
+function bars(id,rows,max,o={}){
+  const root=$(id),d=o.d==null?2:o.d;if(!root)return;
+  rows.forEach(r=>{const row=h('div','bar-row');const w=Math.max(0,r.v)/max*100;
+    row.tabIndex=0;
+    row.innerHTML=`<div class="bl">${r.n}${r.s?`<small>${r.s}</small>`:''}</div><div class="bar-track"><div class="bar-fill ${r.c||''}" style="width:${w}%"></div>${r.avg!=null?`<span class="bar-avg" style="left:${r.avg/max*100}%"></span>`:''}</div><div class="bv">${r.t||f2(r.v,d)+(o.unit||'')}</div>`;
+    bindTip(row,r.tip||`${r.n}: ${r.t||f2(r.v,d)+(o.unit||'')}`);root.appendChild(row)});
+  if(o.line!=null){const l=h('div','vline',`<span>${o.lineLabel}</span>`);root.appendChild(l);const place=()=>{const t=$('.bar-track',root);if(!t)return;const a=root.getBoundingClientRect(),b=t.getBoundingClientRect();l.style.left=(b.left-a.left+b.width*o.line/max)+'px'};place();addEventListener('resize',place)}
+}
+/* ================= features: gap chart, headline, bridge, matrix ================= */
+const SYM={in:'●',lim:'◐',ext:'↗',plan:'◷',closed:'×',no:'–',nd:'?'};
+(function(){
+  const others=COMP.slice(1),me=COMP[0][2],N=others.length,NF=ROWS.length;
+  const NHW=COMP.map(c=>c[1]).lastIndexOf('sep')-1,NSW=N-NHW;
+  const tips=typeof ROWTIP!=='undefined'&&Array.isArray(ROWTIP)?ROWTIP:[];
+  const short=r=>String(r).replace(/\s*\([^)]*\)\s*$/,'');
+  /* feature row -> related hypotheses, and the name each hypothesis goes by in the closing line */
+  const REF={5:[0],9:[14],10:[9],4:[16],11:[10,12]};
+  const GAP={0:'perps',9:'paid protection',10:'multisig business accounts',12:'inheritance',14:'loans',16:'BTC yield'};
+  const rows=ROWS.map((r,i)=>{const st=others.map(c=>c[2][i][0]),hw=st.slice(0,NHW).filter(s=>s==='in').length,emb=st.filter(s=>s==='in').length;
+    return {r,i,emb,hw,oth:st.filter(s=>s==='lim'||s==='ext'||s==='plan'||s==='closed').length,me:me[i][0]}}).sort((a,b)=>b.emb-a.emb);
+  const mine=x=>x.me==='in'||x.me==='lim',has=rows.filter(mine),lack=rows.filter(x=>!mine(x));
+  const row=x=>`<div class="gap-row${mine(x)?'':' miss'}" tabindex="0"><span>${short(x.r)}${x.me==='lim'?' <span class="small">limited</span>':x.me==='plan'?' <span class="small">announced</span>':''} ${(REF[x.i]||[]).map(ref).join(' ')}</span><span class="gap-bar" role="img" aria-label="built in at ${x.emb} of ${N}">${x.emb?`<i style="flex:${x.emb}"></i>`:''}${x.oth?`<i class="e" style="flex:${x.oth}"></i>`:''}${N-x.emb-x.oth?`<i class="o" style="flex:${N-x.emb-x.oth}"></i>`:''}</span><span class="n">${x.emb} of ${N}</span></div>`;
+  const group=(t,a)=>`<div class="gap-g"><h4 class="lbl">${t} (${a.length})</h4>${a.map(row).join('')}</div>`;
+  $('#ch-gap').innerHTML=group('Tangem has it',has)+group('Tangem lacks it',lack);
+  $$('#ch-gap .gap-row').forEach((e,k)=>{const x=has.concat(lack)[k];bindTip(e,`${x.emb-x.hw} of ${NSW} software wallets and ${x.hw} of ${NHW} hardware wallets have ${lc(short(x.r))} built in.`)});
+  /* headlines and the closing line, all counted from the matrix */
+  const top=lack[0];
+  if(top){const pl=/s$/.test(short(top.r));
+    $('#gap-h').textContent=`${short(top.r)} ${pl?'are':'is'} the most common feature Tangem lacks: ${top.emb} of ${N} competitors have ${pl?'them':'it'} built in`;
+    const maj=rows.filter(x=>x.emb>N/2),got=maj.filter(mine).length;
+    $('#co-h2').textContent=`Tangem has ${got===maj.length?`the ${word(maj.length)}`:`${word(got)} of the ${word(maj.length)}`} most common features. Its biggest gap is ${lc(short(top.r))}.`;
+    const nin=me.filter(c=>c[0]==='in').length,nlim=me.filter(c=>c[0]==='lim').length;
+  }
+  const hs=lack.flatMap(x=>REF[x.i]||[]).filter(i=>HYP[i]&&GAP[i]);
+  const wave=(t,where)=>{const a=hs.filter(i=>HYP[i].tier===t);if(!a.length)return '';const n=a.map(i=>GAP[i]);
+    return `${list(n)} ${a.length>1||/s$/.test(n[0])?'are':'is'} ${where} (${a.map(ref).join(', ')})`};
+  const none=lack.filter(x=>!(REF[x.i]||[]).length).map(x=>lc(short(x.r)));
+  /* the count, the waves joined into one sentence, and the features with no hypothesis */
+  const sent=a=>{a=a.filter(Boolean);return a.length?' '+cap(a.length>2?a.slice(0,-1).join(', ')+', and '+a[a.length-1]:a.join(', and '))+'.':''};
+  $('#gap-bridge').innerHTML=`Tangem lacks ${word(lack.length)} of the ${NF} features.`+sent([wave(1,'in the first wave'),wave(2,'in the next wave'),wave(3,'deferred')])
+    +sent([none.length?`${list(none)} ${none.length>1?'have':'has'} no hypothesis`:'']);
+  /* matrix */
+  $('#mx').innerHTML='<thead><tr><th>Feature</th>'+COMP.map(c=>`<th class="${c[1]}">${c[0]}</th>`).join('')+'</tr></thead><tbody>'+ROWS.map((r,i)=>`<tr><th scope="row">${tips[i]?`<span class="hint" tabindex="0" data-tip="${esc(tips[i])}">${r}</span>`:r}</th>`+COMP.map((c,j)=>`<td class="${c[1]}"><button type="button" class="cell ${c[2][i][0]}" data-i="${i}" data-j="${j}" aria-label="${esc(c[0])}, ${esc(r)}: ${esc(c[2][i][1])}">${SYM[c[2][i][0]]}</button></td>`).join('')+'</tr>').join('')+'</tbody>';
+  $$('#mx .cell').forEach(b=>{const c=COMP[b.dataset.j],k=b.dataset.i;bindTip(b,`${c[0]} · ${ROWS[k]}. ${c[2][k][1]}`)});
+})();
+
+/* (kept for build.py: no extra charts) */
+
+/* ================= data added in version 4: hypothesis cards and the deferred table ================= */
+(function(){
+  const field=(t,b)=>`<div class="hc-b">${b?`<h4 class="lbl">${t}</h4>${b}`:''}</div>`;
+  /* the same fields in the same order on every card; the next wave leaves out "Consists of" */
+  const card=(x,i,full)=>`<article class="hcard t${x.tier}${full?' full':''}">
+    <div><div class="hc-id"><span class="tok t${x.tier}" aria-hidden="true">${pad(i)}</span><span>${effort(x)}</span></div><h3>${x.s||''}</h3></div>
+    <p class="hc-idea">${x.idea||''}</p>
+    ${full?field('Consists of',bullets(EL_[i])):''}${field('Earns',para(earns(i)))}${field('For $1M a year',para(x.need))}${field('Competitors',para(x.comp))}
+    <button type="button" class="chipbtn" data-h="${i}" aria-label="Open the sheet for hypothesis ${i+1}">Open the sheet</button></article>`;
+  [[1,'#hy-first'],[2,'#hy-next']].forEach(([T,sel])=>$(sel).innerHTML=HYP.map((x,i)=>x.tier===T?card(x,i,T===1):'').join(''));
+  $('#hy-def tbody').innerHTML=HYP.map((x,i)=>x.tier!==3?'':`<tr><td class="k">${ref(i)} ${x.s||''}</td><td class="m" data-l="Why not now">${x.why3||''}</td><td class="m" data-l="Revisit when">${x.back||''}</td></tr>`).join('');
+  [1,2,3].forEach(t=>{$('#n-t'+t).textContent=TIER[t]+' · '+cnt(t)});
+  $('#hy-h2').textContent=`${cap(word(cnt(1)))} to run first, ${word(cnt(2))} next, ${word(cnt(3))} deferred. Only perps has competitor revenue above $1M a year behind it.`;
+})();
+
+/* ================= sources ================= */
+(function(){
+  const A=(u,t)=>`<a href="https://${u}" target="_blank" rel="noopener">${t||u.split('/')[0]}</a>`;
+  const src=SRC(A),n=src.reduce((n,g)=>n+g[1].length,0);
+  $('#src').innerHTML=src.map(g=>`<p><b>${g[0]}.</b> ${g[1].join(' · ')}</p>`).join('');
+  $('#src-n').textContent=`${n} ${n===1?'link':'links'} in ${src.length} groups`;
+})();
+
+/* ================= hover notes written in the markup ================= */
+$$('[data-tip]').forEach(e=>bindTip(e,e.dataset.tip));
+
+/* ================= nav: in-page links and the current section ================= */
+(function(){
+  const secs=$$('section[id]'),nav=$('.nav'),links=$$('#nav a');
+  const to=el=>scrollTo({top:el.getBoundingClientRect().top+scrollY-nav.offsetHeight,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  const byHash=hs=>{try{return hs.length>1?document.getElementById(decodeURIComponent(hs.slice(1))):null}catch(e){return null}};
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]'),el=a&&byHash(a.getAttribute('href'));if(!el)return;e.preventDefault();to(el);try{history.replaceState(null,'',a.getAttribute('href'))}catch(_){}});
+  const spy=()=>{
+    const y=nav.offsetHeight+innerHeight*.3;let id='';secs.forEach(s=>{if(s.getBoundingClientRect().top<=y)id='#'+s.id});
+    if(innerHeight+scrollY>=document.documentElement.scrollHeight-2)id='#'+secs[secs.length-1].id;
+    links.forEach(a=>{const on=a.getAttribute('href')===id;if(on===(a.getAttribute('aria-current')==='true'))return;
+      if(on){a.setAttribute('aria-current','true');const n=$('#nav');n.scrollLeft=a.offsetLeft-n.offsetLeft-n.clientWidth/2+a.clientWidth/2}else a.removeAttribute('aria-current')});
+  };
+  addEventListener('scroll',spy,{passive:true});addEventListener('resize',spy);spy();
+})();
+
+/* ================= revenue by wallet and feature ================= */
+(function(){
+  if(typeof REV==='undefined'||!$('#rv'))return;
+  const BN={c:'measured on-chain',f:'company filing',s:'stated by the company',p:'press report',e:'our estimate'};
+  const SHOW=['swaps','perps','card','fiat','staking','yield','pred'];
+  const COLS=[['tot','Total']].concat(SHOW.map(k=>RF.find(f=>f[0]===k)));
+  const st={per:1,type:'all',key:'tot',dir:-1};
+  const fm=v=>v>=1e8?'$'+Math.round(v/1e6)+'M':v>=1e6?'$'+f2(v/1e6,1)+'M':v>=1e3?'$'+Math.round(v/1e3)+'K':v>0?'<$1K':'$0';
+  const cell=(r,k)=>k==='tot'?r.tot:r.f[k];
+  const val=(r,k)=>{const c=cell(r,k);return Array.isArray(c)&&c[st.per]!=null?c[st.per]:null};
+  const rank=(r,k)=>{const c=cell(r,k);return Array.isArray(c)?(c[st.per]!=null?2:1.5):c!=null?1:0};
+  const rowsNow=()=>REV.filter(r=>st.type==='all'||r.t===st.type);
+  function draw(){
+    const rows=rowsNow().slice();
+    if(st.key==='w')rows.sort((a,b)=>st.dir*a.w.localeCompare(b.w));
+    else rows.sort((a,b)=>{const ra=rank(a,st.key),rb=rank(b,st.key);if(ra!==rb)return rb-ra;const va=val(a,st.key),vb=val(b,st.key);if(va!=null&&vb!=null&&va!==vb)return st.dir*(va-vb);return (a.me?-1:0)-(b.me?-1:0)||REV.indexOf(a)-REV.indexOf(b)});
+    const max={};COLS.forEach(([k])=>{max[k]=Math.max(0,...rows.map(r=>val(r,k)||0))});
+    const tips=[];
+    const td=(r,k)=>{const c=cell(r,k),L=k==='tot'?'Total':RF.find(x=>x[0]===k)[1];
+      if(c==null)return `<td class="${k==='tot'?'tot ':''}no"><span aria-label="${k==='tot'?'no figure':'doesn\'t have it'}">${k==='tot'?'n/d':''}</span></td>`;
+      if(!Array.isArray(c)){tips.push(`${r.w} · ${L}. It has this and publishes no revenue figure.${c?' '+c:''}`);return `<td class="nd"><button type="button" class="rvc" data-t="${tips.length-1}">n/d</button></td>`}
+      const v=c[st.per],ge=c[5]==='ge'?'≥':'';
+      if(v==null){tips.push(`${r.w} · ${L}. ${st.per?'No 12-month figure exists.':'Only an annual figure exists: '+ge+fm(c[1])+'.'} ${c[3]}`);return `<td class="${k==='tot'?'tot ':''}nd"><button type="button" class="rvc" data-t="${tips.length-1}">${st.per?'n/d':'year only'}</button></td>`}
+      tips.push(`${r.w} · ${L}: ${ge}${fm(v)}, ${BN[c[2]]}. ${c[3]}`);
+      const w=max[k]?Math.max(v/max[k]*100,v>0?2:0):0;
+      return `<td class="${k==='tot'?'tot ':''}num"><button type="button" class="rvc" data-t="${tips.length-1}"><i class="rvb" style="width:${w}%"></i><span>${ge}${fm(v)}${c[4]?'<sup>*</sup>':''}</span><em class="b-${c[2]}" aria-hidden="true">${c[2].toUpperCase()}</em></button></td>`};
+    const th=([k,l])=>`<th class="${k==='tot'?'tot':''}" aria-sort="${st.key===k?(st.dir<0?'descending':'ascending'):'none'}"><button type="button" class="rvh" data-k="${k}">${l}<span class="ar" aria-hidden="true">${st.key===k?(st.dir<0?'↓':'↑'):''}</span></button></th>`;
+    $('#rv').innerHTML=`<thead><tr>${th(['w','Wallet'])}${COLS.map(th).join('')}</tr></thead><tbody>`+rows.map(r=>`<tr class="${r.me?'me':''}"><th scope="row">${r.w}<small>${r.t==='hw'?'hardware':'software'}</small></th>${COLS.map(([k])=>td(r,k)).join('')}</tr>`).join('')
+      +'</tbody>';
+    $$('#rv .rvc').forEach(b=>bindTip(b,tips[+b.dataset.t]));
+    $$('#rv .rvh').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.k;if(st.key===k)st.dir=-st.dir;else{st.key=k;st.dir=k==='w'?1:-1}draw()}));
+    $$('[data-per]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.per===st.per)));
+    $$('[data-rt]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rt===st.type)));
+  }
+  $$('[data-per]').forEach(b=>b.addEventListener('click',()=>{st.per=+b.dataset.per;draw()}));
+  $$('[data-rt]').forEach(b=>b.addEventListener('click',()=>{st.type=b.dataset.rt;draw()}));
+  draw();
+})();
+
+</script>
+</body>
+</html>
